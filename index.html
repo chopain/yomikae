@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yomikae — Japanese Kanji for Chinese Speakers</title>
+    <meta name="description" content="Learn Japanese kanji faster by leveraging your Chinese character knowledge. See Japanese and Chinese readings side-by-side, with warnings for false friends.">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Yomikae — Japanese Kanji for Chinese Speakers">
+    <meta property="og:description" content="Already know Chinese characters? Learn Japanese kanji faster with dual readings and false friend alerts.">
+    <meta property="og:type" content="website">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --accent: #f97316;
+            --accent-light: #fb923c;
+            --danger: #dc2626;
+            --success: #059669;
+            --text: #0f172a;
+            --text-light: #64748b;
+            --bg: #ffffff;
+            --bg-alt: #f8fafc;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans CJK', sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+            background: var(--bg);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .container-narrow {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Animated Gradient Background */
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gradient-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 100px 0 80px;
+            color: white;
+            position: relative;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            animation: float 3s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        .app-name {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .app-name-jp {
+            font-size: 1.5rem;
+            opacity: 0.9;
+            margin-bottom: 32px;
+            font-weight: 400;
+        }
+
+        .tagline {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            line-height: 1.3;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto 48px;
+            line-height: 1.5;
+        }
+
+        /* Email Form */
+        .signup-form {
+            display: flex;
+            gap: 12px;
+            max-width: 500px;
+            margin: 0 auto 20px;
+        }
+
+        .signup-form input[type="email"] {
+            flex: 1;
+            padding: 18px 24px;
+            font-size: 1.125rem;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.95);
+            color: var(--text);
+        }
+
+        .signup-form input[type="email"]:focus {
+            border-color: white;
+            background: white;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .signup-form button {
+            padding: 18px 36px;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: white;
+            background: var(--accent);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4);
+        }
+
+        .signup-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(249, 115, 22, 0.5);
+        }
+
+        .signup-form button:active {
+            transform: translateY(0);
+        }
+
+        .form-note {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            text-align: center;
+        }
+
+        .success-message {
+            display: none;
+            padding: 20px 28px;
+            background: rgba(255,255,255,0.95);
+            color: var(--success);
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        /* App Screenshots Section */
+        .screenshots {
+            padding: 80px 0;
+            background: linear-gradient(to bottom, #667eea, #f8fafc 60%);
+        }
+
+        .screenshots-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-top: 60px;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* iPhone Mockup */
+        .iphone-mockup {
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+            position: relative;
+            animation: fadeInUp 0.8s ease-out backwards;
+        }
+
+        .iphone-mockup:nth-child(2) {
+            animation-delay: 0.2s;
+            transform: translateY(-30px);
+        }
+
+        .iphone-mockup:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .phone-frame {
+            background: #1f2937;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 28px;
+            background: #1f2937;
+            border-radius: 0 0 20px 20px;
+            z-index: 2;
+        }
+
+        .phone-screen {
+            background: white;
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 9 / 19.5;
+        }
+
+        /* Mock App UI */
+        .app-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            padding: 50px 20px 20px;
+            color: white;
+        }
+
+        .app-search {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: white;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .app-search::before {
+            content: '🔍';
+        }
+
+        .app-content {
+            padding: 20px;
+            background: #f8fafc;
+            min-height: 300px;
+        }
+
+        .kanji-display {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .kanji-large {
+            font-size: 72px;
+            text-align: center;
+            margin-bottom: 16px;
+            color: var(--primary);
+        }
+
+        .reading-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .reading-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .reading-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .reading-meaning {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .false-friend-badge {
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .list-item {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .list-kanji {
+            font-size: 32px;
+            width: 50px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .list-info {
+            flex: 1;
+            font-size: 13px;
+        }
+
+        .list-reading {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+
+        .list-meaning {
+            color: var(--text-light);
+            font-size: 12px;
+        }
+
+        /* Section */
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-alt {
+            background: var(--bg-alt);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            text-align: center;
+            color: var(--primary);
+            letter-spacing: -0.02em;
+        }
+
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 60px;
+        }
+
+        /* Example Card */
+        .example-card {
+            background: white;
+            border-radius: 24px;
+            padding: 48px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            margin-bottom: 48px;
+            border: 1px solid var(--border);
+        }
+
+        .example-header {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 32px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border-radius: 12px;
+            color: var(--danger);
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.3px;
+        }
+
+        .example-character {
+            font-size: 6rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--danger) 0%, #ef4444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 40px;
+            font-weight: 700;
+        }
+
+        .reading-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .reading-box {
+            padding: 28px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .reading-box-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .reading-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .reading-box-meaning {
+            color: var(--text-light);
+            font-size: 1.125rem;
+        }
+
+        /* Features */
+        .features {
+            display: grid;
+            gap: 32px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .feature {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+            background: white;
+            padding: 32px;
+            border-radius: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .feature:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .feature-content {
+            flex: 1;
+        }
+
+        .feature-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .feature-desc {
+            color: var(--text-light);
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        /* Target Audience */
+        .audience-list {
+            list-style: none;
+            display: grid;
+            gap: 16px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .audience-list li {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 24px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border: 1px solid var(--border);
+            font-size: 1.05rem;
+            transition: all 0.3s;
+        }
+
+        .audience-list li:hover {
+            transform: translateX(8px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+
+        .audience-list li::before {
+            content: "✓";
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Stats Section */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 32px 24px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            border: 1px solid var(--border);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 1.05rem;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        footer {
+            padding: 60px 0;
+            text-align: center;
+            color: var(--text-light);
+            background: var(--primary);
+            color: white;
+        }
+
+        footer p {
+            opacity: 0.9;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 80px 0 60px;
+            }
+
+            .app-name {
+                font-size: 2.5rem;
+            }
+
+            .tagline {
+                font-size: 1.5rem;
+            }
+
+            .subtitle {
+                font-size: 1.125rem;
+            }
+
+            .signup-form {
+                flex-direction: column;
+            }
+
+            .screenshots-grid {
+                grid-template-columns: 1fr;
+                gap: 60px;
+            }
+
+            .iphone-mockup:nth-child(2) {
+                transform: translateY(0);
+            }
+
+            .reading-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .example-character {
+                font-size: 4rem;
+            }
+
+            .example-card {
+                padding: 32px 24px;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .feature {
+                flex-direction: column;
+                text-align: center;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero -->
+    <section class="hero gradient-bg">
+        <div class="container-narrow hero-content">
+            <div class="logo">📖</div>
+            <h1 class="app-name">Yomikae</h1>
+            <p class="app-name-jp">読み替え</p>
+            <p class="tagline">Learn Japanese kanji using the Chinese you already know</p>
+            <p class="subtitle">See Japanese and Chinese readings side-by-side — with warnings for the characters that will trip you up.</p>
+
+            <form class="signup-form" id="signup-form">
+                <input type="email" name="email" placeholder="your@email.com" required>
+                <button type="submit">Notify Me</button>
+            </form>
+            <p class="form-note">Get notified when the iOS app launches. No spam, ever.</p>
+
+            <div class="success-message" id="success-message">
+                🎉 You're on the list! We'll email you when Yomikae launches.
+            </div>
+        </div>
+    </section>
+
+    <!-- App Screenshots -->
+    <section class="screenshots">
+        <div class="container">
+            <h2 class="section-title" style="color: white; margin-bottom: 0;">See it in action</h2>
+
+            <div class="screenshots-grid">
+                <!-- Screenshot 1: Search/List -->
+                <div class="iphone-mockup">
+                    <div class="phone-frame">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <div class="app-header">
+                                <div class="app-search">Search kanji...</div>
+                            </div>
+                            <div class="app-content">
+                                <div class="list-item">
+                                    <div class="list-kanji">学</div>
+                                    <div class="list-info">
+                                        <div class="list-reading">がく (gaku) • xué</div>
+                                        <div class="list-meaning">study, learning</div>
+                                    </div>
+                                </div>
+                                <div class="list-item">
+                                    <div class="list-kanji">書</div>
+                                    <div class="list-info">
+                                        <div class="list-reading">しょ (sho) • shū</div>
+                                        <div class="list-meaning">write, book</div>
+                                    </div>
+                                </div>
+                                <div class="list-item">
+                                    <div class="list-kanji">読</div>
+                                    <div class="list-info">
+                                        <div class="list-reading">どく (doku) • dú</div>
+                                        <div class="list-meaning">read</div>
+                                    </div>
+                                </div>
+                                <div class="list-item">
+                                    <div class="list-kanji">語</div>
+                                    <div class="list-info">
+                                        <div class="list-reading">ご (go) • yǔ</div>
+                                        <div class="list-meaning">language, word</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Screenshot 2: Detail View -->
+                <div class="iphone-mockup">
+                    <div class="phone-frame">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <div class="app-header">
+                                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">← Back</div>
+                            </div>
+                            <div class="app-content">
+                                <div class="kanji-display">
+                                    <div class="kanji-large">雨</div>
+                                    <div style="margin-bottom: 16px;">
+                                        <div class="reading-label">🇯🇵 Japanese</div>
+                                        <div class="reading-value">あめ (ame)</div>
+                                        <div class="reading-value" style="font-size: 13px; margin-top: 4px;">う (u)</div>
+                                        <div class="reading-meaning">rain</div>
+                                    </div>
+                                    <div style="padding-top: 16px; border-top: 1px solid #e2e8f0;">
+                                        <div class="reading-label">🇨🇳 Chinese</div>
+                                        <div class="reading-value">yǔ</div>
+                                        <div class="reading-meaning">rain</div>
+                                    </div>
+                                </div>
+                                <div style="background: white; border-radius: 12px; padding: 16px; font-size: 13px; color: #64748b;">
+                                    <strong style="color: #0f172a;">Common words:</strong><br>
+                                    雨天 (うてん) rainy weather<br>
+                                    大雨 (おおあめ) heavy rain
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Screenshot 3: False Friend Alert -->
+                <div class="iphone-mockup">
+                    <div class="phone-frame">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <div class="app-header">
+                                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">← Back</div>
+                            </div>
+                            <div class="app-content">
+                                <div class="kanji-display">
+                                    <div class="false-friend-badge">⚠️ FALSE FRIEND</div>
+                                    <div class="kanji-large" style="font-size: 64px;">手紙</div>
+                                    <div style="margin-bottom: 16px;">
+                                        <div class="reading-label">🇯🇵 Japanese</div>
+                                        <div class="reading-value">てがみ (tegami)</div>
+                                        <div class="reading-meaning">letter, mail</div>
+                                    </div>
+                                    <div style="padding-top: 16px; border-top: 1px solid #e2e8f0;">
+                                        <div class="reading-label">🇨🇳 Chinese</div>
+                                        <div class="reading-value">shǒuzhǐ</div>
+                                        <div class="reading-meaning">toilet paper 🧻</div>
+                                    </div>
+                                </div>
+                                <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 16px; font-size: 13px; color: #991b1b;">
+                                    <strong>⚠️ Warning:</strong> These characters mean completely different things in Japanese vs Chinese!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Example -->
+    <section class="section">
+        <div class="container-narrow">
+            <h2 class="section-title">Don't make this mistake</h2>
+            <p class="section-subtitle">Knowing Chinese characters is a huge advantage — but there are traps you need to know about.</p>
+
+            <div class="example-card">
+                <div class="example-header">
+                    ⚠️ FALSE FRIEND ALERT
+                </div>
+
+                <div class="example-character">手紙</div>
+
+                <div class="reading-grid">
+                    <div class="reading-box">
+                        <div class="reading-box-label">🇯🇵 Japanese</div>
+                        <div class="reading-text">てがみ (tegami)</div>
+                        <div class="reading-box-meaning">letter, correspondence</div>
+                    </div>
+                    <div class="reading-box">
+                        <div class="reading-box-label">🇨🇳 Chinese</div>
+                        <div class="reading-text">shǒuzhǐ</div>
+                        <div class="reading-box-meaning">toilet paper 😬</div>
+                    </div>
+                </div>
+            </div>
+
+            <p style="text-align: center; color: var(--text-light); font-size: 1.125rem; line-height: 1.6;">
+                There are <strong style="color: var(--danger);">1,400+ character pairs</strong> like this where the meaning is completely different in Japanese vs Chinese. Yomikae warns you before you embarrass yourself.
+            </p>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Everything you need</h2>
+            <p class="section-subtitle">A comprehensive dictionary built specifically for Chinese speakers learning Japanese.</p>
+
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">6,000+</div>
+                    <div class="stat-label">Common Kanji</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">1,400+</div>
+                    <div class="stat-label">False Friends Flagged</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Works Offline</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">How Yomikae helps</h2>
+            <p class="section-subtitle">Designed from the ground up for Chinese speakers learning Japanese.</p>
+
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">🔍</div>
+                    <div class="feature-content">
+                        <div class="feature-title">Dual-Reading Dictionary</div>
+                        <div class="feature-desc">Search any kanji and see Japanese readings (on'yomi + kun'yomi) alongside Chinese pinyin — instantly see the connection between both languages.</div>
+                    </div>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">⚠️</div>
+                    <div class="feature-content">
+                        <div class="feature-title">False Friend Alerts</div>
+                        <div class="feature-desc">Over 1,400 character pairs flagged by severity level. Know which characters will cause confusion before you use them wrong in conversation.</div>
+                    </div>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-content">
+                        <div class="feature-title">Built for Chinese Speakers</div>
+                        <div class="feature-desc">Unlike other apps designed for English speakers, Yomikae uses your existing character knowledge as the foundation for faster learning.</div>
+                    </div>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">📱</div>
+                    <div class="feature-content">
+                        <div class="feature-title">Works Offline</div>
+                        <div class="feature-desc">Full dictionary database stored on your device. Look up any character anywhere — no internet connection required.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Who It's For -->
+    <section class="section section-alt">
+        <div class="container-narrow">
+            <h2 class="section-title">Perfect for you if...</h2>
+
+            <ul class="audience-list">
+                <li>You speak Chinese and are learning Japanese</li>
+                <li>You can read kanji but struggle with Japanese pronunciation</li>
+                <li>You've been embarrassed by a false friend before</li>
+                <li>You want to leverage what you already know</li>
+                <li>You're a heritage speaker formalizing your knowledge</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="section">
+        <div class="container-narrow" style="text-align: center;">
+            <h2 class="section-title">Coming soon to iOS</h2>
+            <p class="section-subtitle">Join the waitlist to be first to know when Yomikae launches.</p>
+
+            <form class="signup-form" id="signup-form-2">
+                <input type="email" name="email" placeholder="your@email.com" required>
+                <button type="submit">Notify Me</button>
+            </form>
+            <p class="form-note" style="color: var(--text-light);">No spam. Unsubscribe anytime.</p>
+
+            <div class="success-message" id="success-message-2">
+                🎉 You're on the list! We'll email you when Yomikae launches.
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>© 2025 Yomikae. Made with ❤️ for Chinese speakers learning Japanese.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Form handling
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const email = form.querySelector('input[type="email"]').value;
+                const formNote = form.nextElementSibling;
+                const successDiv = formNote.nextElementSibling;
+
+                // TODO: Replace with your actual form endpoint
+                // Example with Formspree:
+                // await fetch('https://formspree.io/f/YOUR_FORM_ID', {
+                //     method: 'POST',
+                //     body: JSON.stringify({ email }),
+                //     headers: { 'Content-Type': 'application/json' }
+                // });
+
+                console.log('Email submitted:', email);
+                form.style.display = 'none';
+                formNote.style.display = 'none';
+                successDiv.style.display = 'block';
+            });
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
