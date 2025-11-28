@@ -17,7 +17,7 @@ class FalseFriendRepository {
     /// Get false friends filtered by severity level
     /// - Parameter severity: The severity level to filter by
     /// - Returns: Array of false friends with the specified severity
-    func getBySeverity(_ severity: FalseFriend.Severity) async -> [FalseFriend] {
+    func getBySeverity(_ severity: Severity) async -> [FalseFriend] {
         return await Task.detached(priority: .userInitiated) {
             self.dbManager.getAllFalseFriends(severity: severity)
         }.value
@@ -52,7 +52,7 @@ class FalseFriendRepository {
     /// Get false friends filtered by category
     /// - Parameter category: The category to filter by
     /// - Returns: Array of false friends with the specified category
-    func getByCategory(_ category: FalseFriend.Category) async -> [FalseFriend] {
+    func getByCategory(_ category: Category) async -> [FalseFriend] {
         return await Task.detached(priority: .userInitiated) {
             let allFalseFriends = self.dbManager.getAllFalseFriends()
             return allFalseFriends.filter { $0.category == category }
@@ -76,8 +76,8 @@ class FalseFriendRepository {
     ///   - system: Optional Chinese system filter
     /// - Returns: Array of false friends matching all specified criteria
     func getFiltered(
-        severity: FalseFriend.Severity? = nil,
-        category: FalseFriend.Category? = nil,
+        severity: Severity? = nil,
+        category: Category? = nil,
         system: ChineseSystem? = nil
     ) async -> [FalseFriend] {
         return await Task.detached(priority: .userInitiated) {
