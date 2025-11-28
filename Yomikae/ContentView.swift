@@ -19,6 +19,11 @@ struct ContentView: View {
                 .tabItem {
                     Label("False Friends", systemImage: "exclamationmark.triangle")
                 }
+
+            DatabaseTestView()
+                .tabItem {
+                    Label("DB Test", systemImage: "cylinder")
+                }
         }
     }
 }
