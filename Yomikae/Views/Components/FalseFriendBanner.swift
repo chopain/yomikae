@@ -182,24 +182,26 @@ struct FalseFriendBanner: View {
     }
 }
 
-// MARK: - Severity Badge
 
-private struct SeverityBadge: View {
+// MARK: - Severity Badge (Simple)
+
+struct SeverityBadge: View {
     let severity: Severity
 
     var body: some View {
         HStack(spacing: 4) {
-            Image(systemName: severity.icon)
-                .font(.caption2)
+            Circle()
+                .fill(severity.color)
+                .frame(width: 8, height: 8)
 
             Text(severity.displayName)
                 .font(.caption)
                 .fontWeight(.semibold)
+                .foregroundColor(severity.color)
         }
-        .foregroundColor(.white)
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
-        .background(severity.color)
+        .background(severity.color.opacity(0.15))
         .cornerRadius(6)
     }
 }

@@ -97,35 +97,21 @@ struct SearchView: View {
                     }
                 } else {
                     // Empty state for recent searches
-                    ContentUnavailableView(
-                        "No Recent Searches",
-                        systemImage: "clock.arrow.circlepath",
-                        description: Text("Your recently searched characters will appear here")
-                    )
-                    .padding(.top, 100)
+                    EmptyStateView.noRecentSearches()
+                        .padding(.top, 100)
                 }
             }
         }
     }
 
     private var loadingView: some View {
-        VStack(spacing: 16) {
-            ProgressView()
-                .scaleEffect(1.2)
-
-            Text("Searching...")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        LoadingView(message: "Searching...")
     }
 
     private var emptyResultsView: some View {
-        ContentUnavailableView(
-            "No Results",
-            systemImage: "magnifyingglass",
-            description: Text("No characters found for '\(viewModel.searchText)'")
-        )
+        EmptyStateView.noSearchResults(query: viewModel.searchText) {
+            viewModel.clearResults()
+        }
     }
 
     private var resultsListView: some View {

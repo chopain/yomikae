@@ -35,6 +35,12 @@ class DatabaseManager {
 
     private func createSchema() throws {
         try dbQueue.write { db in
+            // Create database metadata table for version tracking
+            try db.create(table: "database_metadata", ifNotExists: true) { t in
+                t.column("key", .text).primaryKey()
+                t.column("value", .text).notNull()
+            }
+
             // Create characters table
             try db.create(table: "characters", ifNotExists: true) { t in
                 t.column("character", .text).primaryKey()
@@ -77,6 +83,69 @@ class DatabaseManager {
                          on: "false_friends",
                          columns: ["character"],
                          ifNotExists: true)
+
+            // Set initial schema version
+            try runMigrations(in: db)
+        }
+    }
+
+    // MARK: - Database Migrations
+
+    private let currentSchemaVersion = 1
+
+    private func runMigrations(in db: Database) throws {
+        let currentVersion = try getDatabaseVersion(in: db)
+
+        guard currentVersion < currentSchemaVersion else {
+            print("✅ Database schema is up to date (version \(currentVersion))")
+            return
+        }
+
+        print("🔄 Running database migrations from version \(currentVersion) to \(currentSchemaVersion)...")
+
+        // Run migrations sequentially
+        for version in (currentVersion + 1)...currentSchemaVersion {
+            try runMigration(toVersion: version, in: db)
+        }
+
+        // Update version
+        try setDatabaseVersion(currentSchemaVersion, in: db)
+        print("✅ Database migrated to version \(currentSchemaVersion)")
+    }
+
+    private func getDatabaseVersion(in db: Database) throws -> Int {
+        if let versionString = try String.fetchOne(
+            db,
+            sql: "SELECT value FROM database_metadata WHERE key = 'schema_version'"
+        ) {
+            return Int(versionString) ?? 0
+        }
+        return 0
+    }
+
+    private func setDatabaseVersion(_ version: Int, in db: Database) throws {
+        try db.execute(
+            sql: "INSERT OR REPLACE INTO database_metadata (key, value) VALUES ('schema_version', ?)",
+            arguments: [String(version)]
+        )
+    }
+
+    private func runMigration(toVersion version: Int, in db: Database) throws {
+        print("  ⬆️ Migrating to version \(version)...")
+
+        switch version {
+        case 1:
+            // Version 1 is the initial schema - no migration needed
+            break
+
+        // Future migrations go here
+        // case 2:
+        //     try db.create(table: "new_table") { t in
+        //         ...
+        //     }
+
+        default:
+            print("  ⚠️ Unknown migration version: \(version)")
         }
     }
 
@@ -94,34 +163,49 @@ class DatabaseManager {
     // MARK: - Data Loading
 
     private func loadCharactersFromJSON() throws {
-        guard let url = Bundle.main.url(forResource: "characters", withExtension: "json") else {
-            print("Warning: characters.json not found in bundle")
-            return
-        }
+        do {
+            print("📥 Importing characters from JSON...")
+            let characters = try JSONImportService.importCharacters(from: "characters")
 
-        let data = try Data(contentsOf: url)
-        let characters = try JSONDecoder().decode([Character].self, from: data)
-
-        try dbQueue.write { db in
-            for character in characters {
-                try insertCharacter(character, in: db)
+            try dbQueue.write { db in
+                for character in characters {
+                    try insertCharacter(character, in: db)
+                }
             }
+
+            print("✅ Successfully loaded \(characters.count) characters into database")
+        } catch JSONImportError.fileNotFound(let filename) {
+            print("⚠️ Warning: \(filename) not found in bundle - skipping character import")
+        } catch JSONImportError.decodingError(let error) {
+            print("❌ Error decoding characters JSON: \(error)")
+            throw error
+        } catch {
+            print("❌ Error loading characters: \(error)")
+            throw error
         }
     }
 
     private func loadFalseFriendsFromJSON() throws {
-        guard let url = Bundle.main.url(forResource: "false_friends", withExtension: "json") else {
-            print("Warning: false_friends.json not found in bundle")
-            return
-        }
+        do {
+            print("📥 Importing false friends from JSON...")
+            // Use v2 format by default
+            let falseFriends = try JSONImportService.importFalseFriends(from: "false_friends_v2")
 
-        let data = try Data(contentsOf: url)
-        let falseFriends = try JSONDecoder().decode([FalseFriend].self, from: data)
-
-        try dbQueue.write { db in
-            for falseFriend in falseFriends {
-                try insertFalseFriend(falseFriend, in: db)
+            try dbQueue.write { db in
+                for falseFriend in falseFriends {
+                    try insertFalseFriend(falseFriend, in: db)
+                }
             }
+
+            print("✅ Successfully loaded \(falseFriends.count) false friends into database")
+        } catch JSONImportError.fileNotFound(let filename) {
+            print("⚠️ Warning: \(filename) not found in bundle - skipping false friends import")
+        } catch JSONImportError.decodingError(let error) {
+            print("❌ Error decoding false friends JSON: \(error)")
+            throw error
+        } catch {
+            print("❌ Error loading false friends: \(error)")
+            throw error
         }
     }
 

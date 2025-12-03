@@ -48,12 +48,27 @@ struct FalseFriendDetailView: View {
         VStack(spacing: 16) {
             // Large character
             Text(falseFriend.character)
-                .font(.system(size: 100, weight: .regular))
+                .font(.system(size: characterFontSize, weight: .regular))
                 .frame(maxWidth: .infinity)
+                .minimumScaleFactor(0.5)
+                .lineLimit(1)
                 .foregroundColor(falseFriend.severity.color)
 
             // Severity Banner (without tap handler)
             FalseFriendBanner(falseFriend: falseFriend, onTap: nil)
+        }
+    }
+
+    private var characterFontSize: CGFloat {
+        let charCount = falseFriend.character.count
+        if charCount == 1 {
+            return 100
+        } else if charCount == 2 {
+            return 80
+        } else if charCount == 3 {
+            return 60
+        } else {
+            return 50
         }
     }
 

@@ -1,0 +1,382 @@
+[
+  {
+    "id": "char_001",
+    "character": "走",
+    "is_false_friend": true,
+    "frequency_rank": 156,
+    "japanese": {
+      "readings": ["そう", "はし-る"],
+      "meanings": ["run", "flee"],
+      "kun_readings": ["はし-る"],
+      "on_readings": ["ソウ"],
+      "jlpt_level": 5
+    },
+    "chinese": {
+      "pinyin_simplified": "zǒu",
+      "pinyin_traditional": "zǒu",
+      "meanings_simplified": ["walk", "go", "leave"],
+      "meanings_traditional": ["walk", "go", "leave"]
+    }
+  },
+  {
+    "id": "char_002",
+    "character": "娘",
+    "is_false_friend": true,
+    "frequency_rank": 892,
+    "japanese": {
+      "readings": ["むすめ", "じょう"],
+      "meanings": ["daughter", "young woman", "girl"],
+      "kun_readings": ["むすめ"],
+      "on_readings": ["ジョウ"],
+      "jlpt_level": 3
+    },
+    "chinese": {
+      "pinyin_simplified": "niáng",
+      "pinyin_traditional": "niáng",
+      "meanings_simplified": ["mother", "married woman", "lady"],
+      "meanings_traditional": ["mother", "married woman", "lady"]
+    }
+  },
+  {
+    "id": "char_003",
+    "character": "手",
+    "is_false_friend": false,
+    "frequency_rank": 45,
+    "japanese": {
+      "readings": ["て", "しゅ"],
+      "meanings": ["hand"],
+      "kun_readings": ["て", "た"],
+      "on_readings": ["シュ"],
+      "jlpt_level": 5
+    },
+    "chinese": {
+      "pinyin_simplified": "shǒu",
+      "pinyin_traditional": "shǒu",
+      "meanings_simplified": ["hand"],
+      "meanings_traditional": ["hand"]
+    }
+  },
+  {
+    "id": "char_004",
+    "character": "紙",
+    "is_false_friend": false,
+    "frequency_rank": 534,
+    "japanese": {
+      "readings": ["かみ", "し"],
+      "meanings": ["paper"],
+      "kun_readings": ["かみ"],
+      "on_readings": ["シ"],
+      "jlpt_level": 4
+    },
+    "chinese": {
+      "pinyin_simplified": "zhǐ",
+      "pinyin_traditional": "zhǐ",
+      "meanings_simplified": ["paper"],
+      "meanings_traditional": ["paper"]
+    }
+  },
+  {
+    "id": "char_005",
+    "character": "后",
+    "is_false_friend": true,
+    "frequency_rank": 234,
+    "japanese": {
+      "readings": ["きさき", "こう", "ごう"],
+      "meanings": ["empress", "queen"],
+      "kun_readings": ["きさき"],
+      "on_readings": ["コウ", "ゴウ"],
+      "jlpt_level": 2
+    },
+    "chinese": {
+      "pinyin_simplified": "hòu",
+      "pinyin_traditional": "hòu",
+      "meanings_simplified": ["after", "behind", "empress"],
+      "meanings_traditional": ["empress", "queen"]
+    }
+  },
+  {
+    "id": "char_006",
+    "character": "学",
+    "is_false_friend": false,
+    "frequency_rank": 28,
+    "japanese": {
+      "readings": ["まな-ぶ", "がく"],
+      "meanings": ["study", "learning", "science"],
+      "kun_readings": ["まな-ぶ"],
+      "on_readings": ["ガク"],
+      "jlpt_level": 5
+    },
+    "chinese": {
+      "pinyin_simplified": "xué",
+      "pinyin_traditional": "xué",
+      "meanings_simplified": ["study", "learn", "school"],
+      "meanings_traditional": ["study", "learn", "school"]
+    }
+  },
+  {
+    "id": "char_007",
+    "character": "生",
+    "is_false_friend": false,
+    "frequency_rank": 12,
+    "japanese": {
+      "readings": ["い-きる", "う-まれる", "せい", "しょう"],
+      "meanings": ["life", "birth", "live", "student"],
+      "kun_readings": ["い-きる", "い-かす", "う-まれる", "は-える", "き", "なま"],
+      "on_readings": ["セイ", "ショウ"],
+      "jlpt_level": 5
+    },
+    "chinese": {
+      "pinyin_simplified": "shēng",
+      "pinyin_traditional": "shēng",
+      "meanings_simplified": ["life", "birth", "grow", "raw"],
+      "meanings_traditional": ["life", "birth", "grow", "raw"]
+    }
+  },
+  {
+    "id": "char_008",
+    "character": "勉",
+    "is_false_friend": false,
+    "frequency_rank": 1123,
+    "japanese": {
+      "readings": ["つと-める", "べん"],
+      "meanings": ["exertion", "endeavor", "encourage", "strive"],
+      "kun_readings": ["つと-める"],
+      "on_readings": ["ベン"],
+      "jlpt_level": 3
+    },
+    "chinese": {
+      "pinyin_simplified": "miǎn",
+      "pinyin_traditional": "miǎn",
+      "meanings_simplified": ["strive", "encourage"],
+      "meanings_traditional": ["strive", "encourage"]
+    }
+  },
+  {
+    "id": "char_009",
+    "character": "強",
+    "is_false_friend": false,
+    "frequency_rank": 167,
+    "japanese": {
+      "readings": ["つよ-い", "きょう", "ごう"],
+      "meanings": ["strong"],
+      "kun_readings": ["つよ-い", "つよ-まる", "つよ-める", "し-いる"],
+      "on_readings": ["キョウ", "ゴウ"],
+      "jlpt_level": 4
+    },
+    "chinese": {
+      "pinyin_simplified": "qiáng",
+      "pinyin_traditional": "qiáng",
+      "meanings_simplified": ["strong", "powerful", "better"],
+      "meanings_traditional": ["strong", "powerful", "better"]
+    }
+  },
+  {
+    "id": "char_010",
+    "character": "大",
+    "is_false_friend": false,
+    "frequency_rank": 8,
+    "japanese": {
+      "readings": ["おお-きい", "だい", "たい"],
+      "meanings": ["large", "big", "great"],
+      "kun_readings": ["おお-きい", "おお-いに"],
+      "on_readings": ["ダイ", "タイ"],
+      "jlpt_level": 5
+    },
+    "chinese": {
+      "pinyin_simplified": "dà",
+      "pinyin_traditional": "dà",
+      "meanings_simplified": ["big", "large", "great"],
+      "meanings_traditional": ["big", "large", "great"]
+    }
+  },
+  {
+    "id": "char_011",
+    "character": "丈",
+    "is_false_friend": false,
+    "frequency_rank": 678,
+    "japanese": {
+      "readings": ["たけ", "じょう"],
+      "meanings": ["length", "measure", "ten feet"],
+      "kun_readings": ["たけ"],
+      "on_readings": ["ジョウ"],
+      "jlpt_level": 2
+    },
+    "chinese": {
+      "pinyin_simplified": "zhàng",
+      "pinyin_traditional": "zhàng",
+      "meanings_simplified": ["measure of length", "husband"],
+      "meanings_traditional": ["measure of length", "husband"]
+    }
+  },
+  {
+    "id": "char_012",
+    "character": "夫",
+    "is_false_friend": false,
+    "frequency_rank": 445,
+    "japanese": {
+      "readings": ["おっと", "ふう", "ふ"],
+      "meanings": ["husband", "man"],
+      "kun_readings": ["おっと", "それ"],
+      "on_readings": ["フ", "フウ"],
+      "jlpt_level": 4
+    },
+    "chinese": {
+      "pinyin_simplified": "fū",
+      "pinyin_traditional": "fū",
+      "meanings_simplified": ["husband", "man", "manual worker"],
+      "meanings_traditional": ["husband", "man", "manual worker"]
+    }
+  },
+  {
+    "id": "char_013",
+    "character": "汽",
+    "is_false_friend": false,
+    "frequency_rank": 1567,
+    "japanese": {
+      "readings": ["き"],
+      "meanings": ["steam", "vapor"],
+      "kun_readings": [],
+      "on_readings": ["キ"],
+      "jlpt_level": 2
+    },
+    "chinese": {
+      "pinyin_simplified": "qì",
+      "pinyin_traditional": "qì",
+      "meanings_simplified": ["steam", "gas"],
+      "meanings_traditional": ["steam", "gas"]
+    }
+  },
+  {
+    "id": "char_014",
+    "character": "車",
+    "is_false_friend": false,
+    "frequency_rank": 89,
+    "japanese": {
+      "readings": ["くるま", "しゃ"],
+      "meanings": ["car", "vehicle"],
+      "kun_readings": ["くるま"],
+      "on_readings": ["シャ"],
+      "jlpt_level": 5
+    },
+    "chinese": {
+      "pinyin_simplified": "chē",
+      "pinyin_traditional": "chē",
+      "meanings_simplified": ["vehicle", "car", "machine"],
+      "meanings_traditional": ["vehicle", "car", "machine"]
+    }
+  },
+  {
+    "id": "char_015",
+    "character": "愛",
+    "is_false_friend": false,
+    "frequency_rank": 312,
+    "japanese": {
+      "readings": ["あい", "いと-しい"],
+      "meanings": ["love", "affection"],
+      "kun_readings": ["いと-しい"],
+      "on_readings": ["アイ"],
+      "jlpt_level": 4
+    },
+    "chinese": {
+      "pinyin_simplified": "ài",
+      "pinyin_traditional": "ài",
+      "meanings_simplified": ["love", "affection", "like"],
+      "meanings_traditional": ["love", "affection", "like"]
+    }
+  },
+  {
+    "id": "char_016",
+    "character": "人",
+    "is_false_friend": false,
+    "frequency_rank": 5,
+    "japanese": {
+      "readings": ["ひと", "じん", "にん"],
+      "meanings": ["person", "people"],
+      "kun_readings": ["ひと"],
+      "on_readings": ["ジン", "ニン"],
+      "jlpt_level": 5
+    },
+    "chinese": {
+      "pinyin_simplified": "rén",
+      "pinyin_traditional": "rén",
+      "meanings_simplified": ["person", "people", "human"],
+      "meanings_traditional": ["person", "people", "human"]
+    }
+  },
+  {
+    "id": "char_017",
+    "character": "老",
+    "is_false_friend": false,
+    "frequency_rank": 423,
+    "japanese": {
+      "readings": ["お-いる", "ふ-ける", "ろう"],
+      "meanings": ["old man", "old", "age"],
+      "kun_readings": ["お-いる", "ふ-ける"],
+      "on_readings": ["ロウ"],
+      "jlpt_level": 4
+    },
+    "chinese": {
+      "pinyin_simplified": "lǎo",
+      "pinyin_traditional": "lǎo",
+      "meanings_simplified": ["old", "aged", "experienced"],
+      "meanings_traditional": ["old", "aged", "experienced"]
+    }
+  },
+  {
+    "id": "char_018",
+    "character": "婆",
+    "is_false_friend": false,
+    "frequency_rank": 1789,
+    "japanese": {
+      "readings": ["ばば", "ばあ"],
+      "meanings": ["old woman", "grandmother"],
+      "kun_readings": ["ばば", "ばあ"],
+      "on_readings": ["バ"],
+      "jlpt_level": 1
+    },
+    "chinese": {
+      "pinyin_simplified": "pó",
+      "pinyin_traditional": "pó",
+      "meanings_simplified": ["grandmother", "old woman"],
+      "meanings_traditional": ["grandmother", "old woman"]
+    }
+  },
+  {
+    "id": "char_019",
+    "character": "新",
+    "is_false_friend": false,
+    "frequency_rank": 67,
+    "japanese": {
+      "readings": ["あたら-しい", "しん"],
+      "meanings": ["new"],
+      "kun_readings": ["あたら-しい", "あら-た", "にい"],
+      "on_readings": ["シン"],
+      "jlpt_level": 5
+    },
+    "chinese": {
+      "pinyin_simplified": "xīn",
+      "pinyin_traditional": "xīn",
+      "meanings_simplified": ["new", "fresh", "modern"],
+      "meanings_traditional": ["new", "fresh", "modern"]
+    }
+  },
+  {
+    "id": "char_020",
+    "character": "聞",
+    "is_false_friend": false,
+    "frequency_rank": 178,
+    "japanese": {
+      "readings": ["き-く", "ぶん", "もん"],
+      "meanings": ["hear", "ask", "listen"],
+      "kun_readings": ["き-く", "き-こえる"],
+      "on_readings": ["ブン", "モン"],
+      "jlpt_level": 5
+    },
+    "chinese": {
+      "pinyin_simplified": "wén",
+      "pinyin_traditional": "wén",
+      "meanings_simplified": ["hear", "smell", "news"],
+      "meanings_traditional": ["hear", "smell", "news"]
+    }
+  }
+]

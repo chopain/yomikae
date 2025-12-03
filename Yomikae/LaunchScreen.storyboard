@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="EHf-IW-A2E">
+            <objects>
+                <viewController id="01J-lp-oVM" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <!-- Background Gradient View -->
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bg1-00-000">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                                <color key="backgroundColor" red="0.117647059" green="0.227450980" blue="0.372549020" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </view>
+
+                            <!-- Main App Name (Japanese) -->
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="読み替え" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-01-jp">
+                                <rect key="frame" x="20" y="320" width="353" height="70"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="70" id="lbl-01-jp-h"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="bold" pointSize="56"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                                <color key="shadowColor" white="0.0" alpha="0.2" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <size key="shadowOffset" width="0.0" height="2"/>
+                            </label>
+
+                            <!-- Subtitle (Romanization) -->
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Yomikae" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-02-en">
+                                <rect key="frame" x="20" y="405" width="353" height="24"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="24" id="lbl-02-en-h"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="20"/>
+                                <color key="textColor" white="1" alpha="0.9" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+
+                            <!-- Tagline -->
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Learn Kanji Using Chinese" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lbl-03-tag">
+                                <rect key="frame" x="20" y="441" width="353" height="18"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="18" id="lbl-03-tag-h"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" white="1" alpha="0.7" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+
+                            <!-- Bridge Icon (Simple representation) -->
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bridge-icon">
+                                <rect key="frame" x="156.5" y="650" width="80" height="4"/>
+                                <color key="backgroundColor" red="0.878431373" green="0.482352941" blue="0.223529412" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="80" id="bridge-w"/>
+                                    <constraint firstAttribute="height" constant="4" id="bridge-h"/>
+                                </constraints>
+                            </view>
+
+                            <!-- Bridge dots -->
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dot-left">
+                                <rect key="frame" x="148.5" y="650" width="8" height="8"/>
+                                <color key="backgroundColor" white="1" alpha="0.8" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="8" id="dot-l-w"/>
+                                    <constraint firstAttribute="height" constant="8" id="dot-l-h"/>
+                                </constraints>
+                            </view>
+
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dot-right">
+                                <rect key="frame" x="236.5" y="650" width="8" height="8"/>
+                                <color key="backgroundColor" white="1" alpha="0.8" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="8" id="dot-r-w"/>
+                                    <constraint firstAttribute="height" constant="8" id="dot-r-h"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                        <color key="backgroundColor" red="0.117647059" green="0.227450980" blue="0.372549020" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <!-- Background fills entire view -->
+                            <constraint firstItem="bg1-00-000" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="bg-top"/>
+                            <constraint firstItem="bg1-00-000" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="bg-lead"/>
+                            <constraint firstItem="bg1-00-000" firstAttribute="trailing" secondItem="Ze5-6b-2t3" secondAttribute="trailing" id="bg-trail"/>
+                            <constraint firstItem="bg1-00-000" firstAttribute="bottom" secondItem="Ze5-6b-2t3" secondAttribute="bottom" id="bg-bottom"/>
+
+                            <!-- Main app name centered vertically, slightly above center -->
+                            <constraint firstItem="lbl-01-jp" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="-70" id="lbl-01-cy"/>
+                            <constraint firstItem="lbl-01-jp" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="lbl-01-lead"/>
+                            <constraint firstItem="lbl-01-jp" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" constant="-20" id="lbl-01-trail"/>
+
+                            <!-- Subtitle below main name -->
+                            <constraint firstItem="lbl-02-en" firstAttribute="top" secondItem="lbl-01-jp" secondAttribute="bottom" constant="15" id="lbl-02-top"/>
+                            <constraint firstItem="lbl-02-en" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="lbl-02-lead"/>
+                            <constraint firstItem="lbl-02-en" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" constant="-20" id="lbl-02-trail"/>
+
+                            <!-- Tagline below subtitle -->
+                            <constraint firstItem="lbl-03-tag" firstAttribute="top" secondItem="lbl-02-en" secondAttribute="bottom" constant="12" id="lbl-03-top"/>
+                            <constraint firstItem="lbl-03-tag" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="lbl-03-lead"/>
+                            <constraint firstItem="lbl-03-tag" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" constant="-20" id="lbl-03-trail"/>
+
+                            <!-- Bridge icon near bottom -->
+                            <constraint firstItem="bridge-icon" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="bridge-cx"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="bridge-icon" secondAttribute="bottom" constant="164" id="bridge-bottom"/>
+
+                            <!-- Bridge dots aligned with bridge -->
+                            <constraint firstItem="dot-left" firstAttribute="centerY" secondItem="bridge-icon" secondAttribute="centerY" id="dot-l-cy"/>
+                            <constraint firstItem="dot-left" firstAttribute="trailing" secondItem="bridge-icon" secondAttribute="leading" constant="-0.5" id="dot-l-trail"/>
+
+                            <constraint firstItem="dot-right" firstAttribute="centerY" secondItem="bridge-icon" secondAttribute="centerY" id="dot-r-cy"/>
+                            <constraint firstItem="dot-right" firstAttribute="leading" secondItem="bridge-icon" secondAttribute="trailing" constant="0.5" id="dot-r-lead"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="53" y="375"/>
+        </scene>
+    </scenes>
+</document>

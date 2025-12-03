@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct ContentView: View {
+    @ObservedObject private var settings = UserSettings.shared
+    @State private var showOnboarding = false
+
     var body: some View {
         TabView {
             SearchView()
@@ -15,19 +18,33 @@ struct ContentView: View {
                     Label("Search", systemImage: "magnifyingglass")
                 }
 
-            FalseFriendsView()
+            FalseFriendsListView()
                 .tabItem {
                     Label("False Friends", systemImage: "exclamationmark.triangle")
                 }
 
-            DatabaseTestView()
+            SettingsView()
                 .tabItem {
-                    Label("DB Test", systemImage: "cylinder")
+                    Label("Settings", systemImage: "gearshape")
                 }
+        }
+        .fullScreenCover(isPresented: $showOnboarding) {
+            OnboardingView()
+                .interactiveDismissDisabled()
+        }
+        .onAppear {
+            // Check if user has completed onboarding
+            if !settings.hasCompletedOnboarding {
+                showOnboarding = true
+            }
         }
     }
 }
 
 #Preview {
     ContentView()
+}
+
+#Preview("Settings") {
+    SettingsView()
 }

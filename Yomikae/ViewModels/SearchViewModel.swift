@@ -14,6 +14,7 @@ class SearchViewModel: ObservableObject {
     // MARK: - Private Properties
 
     private let repository = CharacterRepository()
+    private let historyService = HistoryService.shared
     private var cancellables = Set<AnyCancellable>()
     private let searchDebounceTime: TimeInterval = 0.3 // 300ms
 
@@ -72,10 +73,8 @@ class SearchViewModel: ObservableObject {
     }
 
     private func loadRecentSearches() {
-        Task {
-            // Load recent searches from repository
-            recentSearches = await repository.getRecent(limit: 10)
-        }
+        // Load recent searches from history service
+        recentSearches = historyService.getRecentHistory(limit: 10)
     }
 
     // MARK: - Public Methods
@@ -83,18 +82,11 @@ class SearchViewModel: ObservableObject {
     /// Save a character to recent search history
     /// - Parameter character: The character to save
     func saveToRecentSearches(_ character: Character) {
-        // Remove if already exists to avoid duplicates
-        recentSearches.removeAll { $0.id == character.id }
+        // Add to history service (handles deduplication and persistence)
+        historyService.addToHistory(character)
 
-        // Add to beginning of array
-        recentSearches.insert(character, at: 0)
-
-        // Keep only last 10
-        if recentSearches.count > 10 {
-            recentSearches = Array(recentSearches.prefix(10))
-        }
-
-        // TODO: Persist to database/UserDefaults when user history tracking is implemented
+        // Reload recent searches to update UI
+        loadRecentSearches()
     }
 
     /// Clear all search results
@@ -105,7 +97,7 @@ class SearchViewModel: ObservableObject {
 
     /// Clear recent search history
     func clearRecentSearches() {
+        historyService.clearHistory()
         recentSearches = []
-        // TODO: Clear from persistent storage when implemented
     }
 }

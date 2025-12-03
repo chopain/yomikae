@@ -8,9 +8,13 @@ struct FalseFriendRow: View {
             // Left side: Character with severity-colored background
             ZStack(alignment: .topTrailing) {
                 Text(falseFriend.character)
-                    .font(.system(size: 48, weight: .medium))
+                    .font(.system(size: characterFontSize, weight: .medium))
                     .foregroundColor(.white)
-                    .frame(width: 70, height: 70)
+                    .frame(minWidth: 70, maxWidth: 100)
+                    .frame(height: 70)
+                    .padding(.horizontal, 8)
+                    .minimumScaleFactor(0.5)
+                    .lineLimit(1)
                     .background(
                         RoundedRectangle(cornerRadius: 12)
                             .fill(falseFriend.severity.color)
@@ -89,6 +93,18 @@ struct FalseFriendRow: View {
 
     // MARK: - Computed Properties
 
+    private var characterFontSize: CGFloat {
+        // Adjust font size based on character count
+        let charCount = falseFriend.character.count
+        if charCount == 1 {
+            return 48
+        } else if charCount == 2 {
+            return 36
+        } else {
+            return 28
+        }
+    }
+
     private var firstJapaneseMeaning: String {
         falseFriend.jpMeanings.first ?? "—"
     }
@@ -131,9 +147,13 @@ struct FalseFriendRowVsStyle: View {
         HStack(alignment: .top, spacing: 16) {
             // Character badge
             Text(falseFriend.character)
-                .font(.system(size: 48, weight: .medium))
+                .font(.system(size: characterFontSize, weight: .medium))
                 .foregroundColor(.white)
-                .frame(width: 70, height: 70)
+                .frame(minWidth: 70, maxWidth: 100)
+                .frame(height: 70)
+                .padding(.horizontal, 8)
+                .minimumScaleFactor(0.5)
+                .lineLimit(1)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
                         .fill(falseFriend.severity.color)
@@ -177,6 +197,17 @@ struct FalseFriendRowVsStyle: View {
         .padding(.vertical, 12)
         .padding(.horizontal, 16)
     }
+
+    private var characterFontSize: CGFloat {
+        let charCount = falseFriend.character.count
+        if charCount == 1 {
+            return 48
+        } else if charCount == 2 {
+            return 36
+        } else {
+            return 28
+        }
+    }
 }
 
 // MARK: - Alternative Design: Compact with Colored Meanings
@@ -188,9 +219,13 @@ struct FalseFriendRowCompact: View {
         HStack(spacing: 12) {
             // Character
             Text(falseFriend.character)
-                .font(.system(size: 40, weight: .medium))
+                .font(.system(size: characterFontSize, weight: .medium))
                 .foregroundColor(.white)
-                .frame(width: 60, height: 60)
+                .frame(minWidth: 60, maxWidth: 80)
+                .frame(height: 60)
+                .padding(.horizontal, 6)
+                .minimumScaleFactor(0.5)
+                .lineLimit(1)
                 .background(
                     Circle()
                         .fill(falseFriend.severity.color)
@@ -249,6 +284,17 @@ struct FalseFriendRowCompact: View {
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 12)
+    }
+
+    private var characterFontSize: CGFloat {
+        let charCount = falseFriend.character.count
+        if charCount == 1 {
+            return 40
+        } else if charCount == 2 {
+            return 30
+        } else {
+            return 24
+        }
     }
 }
 

@@ -3,10 +3,42 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		224187DD2EDA080900F16EC8 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224187DC2EDA080900F16EC8 /* SearchViewModel.swift */; };
+		224187DF2EDA08AE00F16EC8 /* SearchResultRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224187DE2EDA08AE00F16EC8 /* SearchResultRow.swift */; };
+		224187E42EDA08CF00F16EC8 /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224187E02EDA08CF00F16EC8 /* Character.swift */; };
+		224187E52EDA08CF00F16EC8 /* ChineseSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224187E12EDA08CF00F16EC8 /* ChineseSystem.swift */; };
+		224187E62EDA08CF00F16EC8 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224187E32EDA08CF00F16EC8 /* UserSettings.swift */; };
+		224187E72EDA08CF00F16EC8 /* FalseFriend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224187E22EDA08CF00F16EC8 /* FalseFriend.swift */; };
+		224187E92EDA094F00F16EC8 /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224187E82EDA094F00F16EC8 /* SearchBar.swift */; };
+		224187F12EDA0CDB00F16EC8 /* CharacterCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224187F02EDA0CDB00F16EC8 /* CharacterCard.swift */; };
+		224187F42EDA0CF400F16EC8 /* FalseFriendBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224187F22EDA0CF400F16EC8 /* FalseFriendBanner.swift */; };
+		224187F52EDA0CF400F16EC8 /* ReadingSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224187F32EDA0CF400F16EC8 /* ReadingSection.swift */; };
+		224187F72EDA0D8500F16EC8 /* CharacterDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224187F62EDA0D8500F16EC8 /* CharacterDetailView.swift */; };
+		224187F92EDA784000F16EC8 /* FalseFriendRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224187F82EDA784000F16EC8 /* FalseFriendRow.swift */; };
+		224187FB2EDA791F00F16EC8 /* FalseFriendsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224187FA2EDA791F00F16EC8 /* FalseFriendsListView.swift */; };
+		224187FD2EDA794A00F16EC8 /* FalseFriendsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224187FC2EDA794A00F16EC8 /* FalseFriendsViewModel.swift */; };
+		224187FF2EDA796500F16EC8 /* FalseFriendDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224187FE2EDA796500F16EC8 /* FalseFriendDetailView.swift */; };
+		224188042EDAFFFD00F16EC8 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224188022EDAFFFD00F16EC8 /* OnboardingView.swift */; };
+		224188072EDB01C700F16EC8 /* View+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224188062EDB01C700F16EC8 /* View+Style.swift */; };
+		224188082EDB01C700F16EC8 /* Color+Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224188052EDB01C700F16EC8 /* Color+Theme.swift */; };
+		2241880B2EDB026C00F16EC8 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224188092EDB026C00F16EC8 /* EmptyStateView.swift */; };
+		2241880C2EDB026C00F16EC8 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2241880A2EDB026C00F16EC8 /* LoadingView.swift */; };
+		2241880E2EDB03E300F16EC8 /* HistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2241880D2EDB03E300F16EC8 /* HistoryService.swift */; };
+		224188112EDDB35D00F16EC8 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2241880F2EDDB35D00F16EC8 /* SettingsView.swift */; };
+		224188132EDDB72800F16EC8 /* false_friends_v2.json in Resources */ = {isa = PBXBuildFile; fileRef = 224188122EDDB72800F16EC8 /* false_friends_v2.json */; };
+		224188162EDDEF8800F16EC8 /* JSONModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224188152EDDEF8800F16EC8 /* JSONModels.swift */; };
+		224188192EDF588E00F16EC8 /* AppIconPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224188172EDF588E00F16EC8 /* AppIconPreview.swift */; };
+		2241881C2EDF594000F16EC8 /* LaunchScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2241881A2EDF594000F16EC8 /* LaunchScreenView.swift */; };
+		224188202EDF5A9A00F16EC8 /* LaunchScreenGuide.md in Resources */ = {isa = PBXBuildFile; fileRef = 2241881E2EDF5A9A00F16EC8 /* LaunchScreenGuide.md */; };
+		224188212EDF5A9A00F16EC8 /* AppIconGuide.md in Resources */ = {isa = PBXBuildFile; fileRef = 2241881D2EDF5A9A00F16EC8 /* AppIconGuide.md */; };
+		224188242EDF5AA400F16EC8 /* generate_placeholder_icon.sh in Resources */ = {isa = PBXBuildFile; fileRef = 224188222EDF5AA400F16EC8 /* generate_placeholder_icon.sh */; };
+		224188262EDF5BF000F16EC8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 224188252EDF5BF000F16EC8 /* LaunchScreen.storyboard */; };
+		2241884A2EDFBBF600F16EC8 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 224188492EDFBBF600F16EC8 /* GRDB */; };
+		43185ED2E09F491A86063E76 /* characters.json in Resources */ = {isa = PBXBuildFile; fileRef = E4B05705C63F41B08CB9174D /* characters.json */; };
 		A0000001000000000000001 /* YomikaeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000002000000000000001 /* YomikaeApp.swift */; };
 		A0000003000000000000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000004000000000000001 /* ContentView.swift */; };
 		A0000005000000000000001 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000006000000000000001 /* SearchView.swift */; };
@@ -17,9 +49,63 @@
 		A0000043000000000000001 /* DatabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000044000000000000001 /* DatabaseService.swift */; };
 		A0000045000000000000001 /* TestRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000046000000000000001 /* TestRecord.swift */; };
 		A0000047000000000000001 /* DatabaseTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000048000000000000001 /* DatabaseTestView.swift */; };
+		A0000049000000000000001 /* CharacterRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000050000000000000001 /* CharacterRepository.swift */; };
+		A0000051000000000000001 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000052000000000000001 /* DatabaseManager.swift */; };
+		A0000053000000000000001 /* FalseFriendRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000054000000000000001 /* FalseFriendRepository.swift */; };
+		A36292A4B41A444083137769 /* false_friends.json in Resources */ = {isa = PBXBuildFile; fileRef = 46E2F57906164195AA4A37F6 /* false_friends.json */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		2241882F2EDFBB1000F16EC8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A0000034000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A0000030000000000000001;
+			remoteInfo = Yomikae;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		224187DC2EDA080900F16EC8 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
+		224187DE2EDA08AE00F16EC8 /* SearchResultRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultRow.swift; sourceTree = "<group>"; };
+		224187E02EDA08CF00F16EC8 /* Character.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Character.swift; sourceTree = "<group>"; };
+		224187E12EDA08CF00F16EC8 /* ChineseSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChineseSystem.swift; sourceTree = "<group>"; };
+		224187E22EDA08CF00F16EC8 /* FalseFriend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FalseFriend.swift; sourceTree = "<group>"; };
+		224187E32EDA08CF00F16EC8 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
+		224187E82EDA094F00F16EC8 /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
+		224187F02EDA0CDB00F16EC8 /* CharacterCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterCard.swift; sourceTree = "<group>"; };
+		224187F22EDA0CF400F16EC8 /* FalseFriendBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FalseFriendBanner.swift; sourceTree = "<group>"; };
+		224187F32EDA0CF400F16EC8 /* ReadingSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingSection.swift; sourceTree = "<group>"; };
+		224187F62EDA0D8500F16EC8 /* CharacterDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterDetailView.swift; sourceTree = "<group>"; };
+		224187F82EDA784000F16EC8 /* FalseFriendRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FalseFriendRow.swift; sourceTree = "<group>"; };
+		224187FA2EDA791F00F16EC8 /* FalseFriendsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FalseFriendsListView.swift; sourceTree = "<group>"; };
+		224187FC2EDA794A00F16EC8 /* FalseFriendsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FalseFriendsViewModel.swift; sourceTree = "<group>"; };
+		224187FE2EDA796500F16EC8 /* FalseFriendDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FalseFriendDetailView.swift; sourceTree = "<group>"; };
+		224188022EDAFFFD00F16EC8 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		224188052EDB01C700F16EC8 /* Color+Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Theme.swift"; sourceTree = "<group>"; };
+		224188062EDB01C700F16EC8 /* View+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Style.swift"; sourceTree = "<group>"; };
+		224188092EDB026C00F16EC8 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
+		2241880A2EDB026C00F16EC8 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
+		2241880D2EDB03E300F16EC8 /* HistoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryService.swift; sourceTree = "<group>"; };
+		2241880F2EDDB35D00F16EC8 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		224188122EDDB72800F16EC8 /* false_friends_v2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = false_friends_v2.json; sourceTree = "<group>"; };
+		224188152EDDEF8800F16EC8 /* JSONModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONModels.swift; sourceTree = "<group>"; };
+		224188172EDF588E00F16EC8 /* AppIconPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconPreview.swift; sourceTree = "<group>"; };
+		2241881A2EDF594000F16EC8 /* LaunchScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreenView.swift; sourceTree = "<group>"; };
+		2241881D2EDF5A9A00F16EC8 /* AppIconGuide.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = AppIconGuide.md; sourceTree = "<group>"; };
+		2241881E2EDF5A9A00F16EC8 /* LaunchScreenGuide.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LaunchScreenGuide.md; sourceTree = "<group>"; };
+		224188222EDF5AA400F16EC8 /* generate_placeholder_icon.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = generate_placeholder_icon.sh; sourceTree = "<group>"; };
+		224188252EDF5BF000F16EC8 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		2241882B2EDFBB1000F16EC8 /* YomikaeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YomikaeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2241883F2EDFBB9800F16EC8 /* AppIconGuide.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = AppIconGuide.md; sourceTree = "<group>"; };
+		224188402EDFBB9800F16EC8 /* AppStoreSubmissionChecklist.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = AppStoreSubmissionChecklist.md; sourceTree = "<group>"; };
+		224188412EDFBB9800F16EC8 /* LaunchScreenGuide.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LaunchScreenGuide.md; sourceTree = "<group>"; };
+		224188422EDFBB9800F16EC8 /* LaunchScreenImplementation.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LaunchScreenImplementation.md; sourceTree = "<group>"; };
+		224188432EDFBB9800F16EC8 /* METADATA.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = METADATA.md; sourceTree = "<group>"; };
+		224188442EDFBB9800F16EC8 /* METADATA_SUMMARY.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = METADATA_SUMMARY.md; sourceTree = "<group>"; };
+		224188452EDFBB9800F16EC8 /* ScreenshotGuide.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ScreenshotGuide.md; sourceTree = "<group>"; };
+		224188462EDFBB9800F16EC8 /* TestingGuide.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TestingGuide.md; sourceTree = "<group>"; };
+		46E2F57906164195AA4A37F6 /* false_friends.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = false_friends.json; sourceTree = "<group>"; };
 		A0000002000000000000001 /* YomikaeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YomikaeApp.swift; sourceTree = "<group>"; };
 		A0000004000000000000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A0000006000000000000001 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
@@ -30,9 +116,25 @@
 		A0000044000000000000001 /* DatabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseService.swift; sourceTree = "<group>"; };
 		A0000046000000000000001 /* TestRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestRecord.swift; sourceTree = "<group>"; };
 		A0000048000000000000001 /* DatabaseTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseTestView.swift; sourceTree = "<group>"; };
+		A0000050000000000000001 /* CharacterRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterRepository.swift; sourceTree = "<group>"; };
+		A0000052000000000000001 /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
+		A0000054000000000000001 /* FalseFriendRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FalseFriendRepository.swift; sourceTree = "<group>"; };
+		E4B05705C63F41B08CB9174D /* characters.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = characters.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		2241882C2EDFBB1000F16EC8 /* YomikaeTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = YomikaeTests; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
+		224188282EDFBB0F00F16EC8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2241884A2EDFBBF600F16EC8 /* GRDB in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A0000014000000000000001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -44,17 +146,102 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		224188032EDAFFFD00F16EC8 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				224188022EDAFFFD00F16EC8 /* OnboardingView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		224188102EDDB35D00F16EC8 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				2241880F2EDDB35D00F16EC8 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		224188142EDDB95E00F16EC8 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
+		224188182EDF588E00F16EC8 /* Dev */ = {
+			isa = PBXGroup;
+			children = (
+				224188172EDF588E00F16EC8 /* AppIconPreview.swift */,
+			);
+			path = Dev;
+			sourceTree = "<group>";
+		};
+		2241881B2EDF594000F16EC8 /* Launch */ = {
+			isa = PBXGroup;
+			children = (
+				2241881A2EDF594000F16EC8 /* LaunchScreenView.swift */,
+			);
+			path = Launch;
+			sourceTree = "<group>";
+		};
+		2241881F2EDF5A9A00F16EC8 /* docs */ = {
+			isa = PBXGroup;
+			children = (
+				2241881D2EDF5A9A00F16EC8 /* AppIconGuide.md */,
+				2241881E2EDF5A9A00F16EC8 /* LaunchScreenGuide.md */,
+			);
+			path = docs;
+			sourceTree = "<group>";
+		};
+		224188232EDF5AA400F16EC8 /* scripts */ = {
+			isa = PBXGroup;
+			children = (
+				224188222EDF5AA400F16EC8 /* generate_placeholder_icon.sh */,
+			);
+			path = scripts;
+			sourceTree = "<group>";
+		};
+		224188472EDFBB9800F16EC8 /* docs */ = {
+			isa = PBXGroup;
+			children = (
+				2241883F2EDFBB9800F16EC8 /* AppIconGuide.md */,
+				224188402EDFBB9800F16EC8 /* AppStoreSubmissionChecklist.md */,
+				224188412EDFBB9800F16EC8 /* LaunchScreenGuide.md */,
+				224188422EDFBB9800F16EC8 /* LaunchScreenImplementation.md */,
+				224188432EDFBB9800F16EC8 /* METADATA.md */,
+				224188442EDFBB9800F16EC8 /* METADATA_SUMMARY.md */,
+				224188452EDFBB9800F16EC8 /* ScreenshotGuide.md */,
+				224188462EDFBB9800F16EC8 /* TestingGuide.md */,
+			);
+			path = docs;
+			sourceTree = "<group>";
+		};
+		224188482EDFBBF600F16EC8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		A0000015000000000000001 = {
 			isa = PBXGroup;
 			children = (
 				A0000016000000000000001 /* Yomikae */,
+				2241882C2EDFBB1000F16EC8 /* YomikaeTests */,
 				A0000017000000000000001 /* Products */,
+				224188142EDDB95E00F16EC8 /* Recovered References */,
+				224188472EDFBB9800F16EC8 /* docs */,
+				224188482EDFBBF600F16EC8 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
 		A0000016000000000000001 /* Yomikae */ = {
 			isa = PBXGroup;
 			children = (
+				224188252EDF5BF000F16EC8 /* LaunchScreen.storyboard */,
+				224188232EDF5AA400F16EC8 /* scripts */,
+				2241881F2EDF5A9A00F16EC8 /* docs */,
 				A0000002000000000000001 /* YomikaeApp.swift */,
 				A0000004000000000000001 /* ContentView.swift */,
 				A0000018000000000000001 /* Models */,
@@ -73,6 +260,7 @@
 			isa = PBXGroup;
 			children = (
 				A0000013000000000000001 /* Yomikae.app */,
+				2241882B2EDFBB1000F16EC8 /* YomikaeTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -80,6 +268,11 @@
 		A0000018000000000000001 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				224188152EDDEF8800F16EC8 /* JSONModels.swift */,
+				224187E02EDA08CF00F16EC8 /* Character.swift */,
+				224187E12EDA08CF00F16EC8 /* ChineseSystem.swift */,
+				224187E22EDA08CF00F16EC8 /* FalseFriend.swift */,
+				224187E32EDA08CF00F16EC8 /* UserSettings.swift */,
 				A0000046000000000000001 /* TestRecord.swift */,
 			);
 			path = Models;
@@ -88,6 +281,8 @@
 		A0000019000000000000001 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				224187FC2EDA794A00F16EC8 /* FalseFriendsViewModel.swift */,
+				224187DC2EDA080900F16EC8 /* SearchViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -95,6 +290,10 @@
 		A0000020000000000000001 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				2241881B2EDF594000F16EC8 /* Launch */,
+				224188182EDF588E00F16EC8 /* Dev */,
+				224188102EDDB35D00F16EC8 /* Settings */,
+				224188032EDAFFFD00F16EC8 /* Onboarding */,
 				A0000025000000000000001 /* Search */,
 				A0000026000000000000001 /* Character */,
 				A0000027000000000000001 /* FalseFriends */,
@@ -106,6 +305,7 @@
 		A0000021000000000000001 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				2241880D2EDB03E300F16EC8 /* HistoryService.swift */,
 				A0000029000000000000001 /* Database */,
 			);
 			path = Services;
@@ -114,6 +314,9 @@
 		A0000022000000000000001 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				E4B05705C63F41B08CB9174D /* characters.json */,
+				46E2F57906164195AA4A37F6 /* false_friends.json */,
+				224188122EDDB72800F16EC8 /* false_friends_v2.json */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -121,6 +324,8 @@
 		A0000023000000000000001 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				224188052EDB01C700F16EC8 /* Color+Theme.swift */,
+				224188062EDB01C700F16EC8 /* View+Style.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -136,6 +341,7 @@
 		A0000025000000000000001 /* Search */ = {
 			isa = PBXGroup;
 			children = (
+				224187DE2EDA08AE00F16EC8 /* SearchResultRow.swift */,
 				A0000006000000000000001 /* SearchView.swift */,
 			);
 			path = Search;
@@ -144,6 +350,8 @@
 		A0000026000000000000001 /* Character */ = {
 			isa = PBXGroup;
 			children = (
+				224187F62EDA0D8500F16EC8 /* CharacterDetailView.swift */,
+				224187F02EDA0CDB00F16EC8 /* CharacterCard.swift */,
 			);
 			path = Character;
 			sourceTree = "<group>";
@@ -151,6 +359,9 @@
 		A0000027000000000000001 /* FalseFriends */ = {
 			isa = PBXGroup;
 			children = (
+				224187FE2EDA796500F16EC8 /* FalseFriendDetailView.swift */,
+				224187F82EDA784000F16EC8 /* FalseFriendRow.swift */,
+				224187FA2EDA791F00F16EC8 /* FalseFriendsListView.swift */,
 				A0000008000000000000001 /* FalseFriendsView.swift */,
 			);
 			path = FalseFriends;
@@ -159,6 +370,11 @@
 		A0000028000000000000001 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				224188092EDB026C00F16EC8 /* EmptyStateView.swift */,
+				2241880A2EDB026C00F16EC8 /* LoadingView.swift */,
+				224187F22EDA0CF400F16EC8 /* FalseFriendBanner.swift */,
+				224187F32EDA0CF400F16EC8 /* ReadingSection.swift */,
+				224187E82EDA094F00F16EC8 /* SearchBar.swift */,
 				A0000048000000000000001 /* DatabaseTestView.swift */,
 			);
 			path = Components;
@@ -168,6 +384,9 @@
 			isa = PBXGroup;
 			children = (
 				A0000044000000000000001 /* DatabaseService.swift */,
+				A0000052000000000000001 /* DatabaseManager.swift */,
+				A0000050000000000000001 /* CharacterRepository.swift */,
+				A0000054000000000000001 /* FalseFriendRepository.swift */,
 			);
 			path = Database;
 			sourceTree = "<group>";
@@ -175,6 +394,31 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		2241882A2EDFBB0F00F16EC8 /* YomikaeTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 224188332EDFBB1000F16EC8 /* Build configuration list for PBXNativeTarget "YomikaeTests" */;
+			buildPhases = (
+				224188272EDFBB0F00F16EC8 /* Sources */,
+				224188282EDFBB0F00F16EC8 /* Frameworks */,
+				224188292EDFBB0F00F16EC8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2241884C2EDFBC1800F16EC8 /* PBXTargetDependency */,
+				224188302EDFBB1000F16EC8 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				2241882C2EDFBB1000F16EC8 /* YomikaeTests */,
+			);
+			name = YomikaeTests;
+			packageProductDependencies = (
+				224188492EDFBBF600F16EC8 /* GRDB */,
+			);
+			productName = YomikaeTests;
+			productReference = 2241882B2EDFBB1000F16EC8 /* YomikaeTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		A0000030000000000000001 /* Yomikae */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A0000031000000000000001 /* Build configuration list for PBXNativeTarget "Yomikae" */;
@@ -202,9 +446,13 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1500;
+				LastSwiftUpdateCheck = 2610;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
+					2241882A2EDFBB0F00F16EC8 = {
+						CreatedOnToolsVersion = 26.1.1;
+						TestTargetID = A0000030000000000000001;
+					};
 					A0000030000000000000001 = {
 						CreatedOnToolsVersion = 15.0;
 					};
@@ -227,15 +475,30 @@
 			projectRoot = "";
 			targets = (
 				A0000030000000000000001 /* Yomikae */,
+				2241882A2EDFBB0F00F16EC8 /* YomikaeTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		224188292EDFBB0F00F16EC8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A0000033000000000000001 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				224188262EDF5BF000F16EC8 /* LaunchScreen.storyboard in Resources */,
+				43185ED2E09F491A86063E76 /* characters.json in Resources */,
+				A36292A4B41A444083137769 /* false_friends.json in Resources */,
+				224188242EDF5AA400F16EC8 /* generate_placeholder_icon.sh in Resources */,
+				224188202EDF5A9A00F16EC8 /* LaunchScreenGuide.md in Resources */,
+				224188212EDF5A9A00F16EC8 /* AppIconGuide.md in Resources */,
+				224188132EDDB72800F16EC8 /* false_friends_v2.json in Resources */,
 				A0000011000000000000001 /* Preview Assets.xcassets in Resources */,
 				A0000009000000000000001 /* Assets.xcassets in Resources */,
 			);
@@ -244,23 +507,114 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		224188272EDFBB0F00F16EC8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A0000032000000000000001 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				224187FD2EDA794A00F16EC8 /* FalseFriendsViewModel.swift in Sources */,
 				A0000003000000000000001 /* ContentView.swift in Sources */,
 				A0000005000000000000001 /* SearchView.swift in Sources */,
+				224187FF2EDA796500F16EC8 /* FalseFriendDetailView.swift in Sources */,
+				224187DD2EDA080900F16EC8 /* SearchViewModel.swift in Sources */,
+				224188162EDDEF8800F16EC8 /* JSONModels.swift in Sources */,
+				224187F72EDA0D8500F16EC8 /* CharacterDetailView.swift in Sources */,
 				A0000007000000000000001 /* FalseFriendsView.swift in Sources */,
 				A0000043000000000000001 /* DatabaseService.swift in Sources */,
+				224187F42EDA0CF400F16EC8 /* FalseFriendBanner.swift in Sources */,
+				2241880B2EDB026C00F16EC8 /* EmptyStateView.swift in Sources */,
+				2241880C2EDB026C00F16EC8 /* LoadingView.swift in Sources */,
+				224187FB2EDA791F00F16EC8 /* FalseFriendsListView.swift in Sources */,
+				224187F52EDA0CF400F16EC8 /* ReadingSection.swift in Sources */,
+				224188042EDAFFFD00F16EC8 /* OnboardingView.swift in Sources */,
+				224187E42EDA08CF00F16EC8 /* Character.swift in Sources */,
+				224187E52EDA08CF00F16EC8 /* ChineseSystem.swift in Sources */,
+				224188072EDB01C700F16EC8 /* View+Style.swift in Sources */,
+				224188082EDB01C700F16EC8 /* Color+Theme.swift in Sources */,
+				224187E92EDA094F00F16EC8 /* SearchBar.swift in Sources */,
+				224187E62EDA08CF00F16EC8 /* UserSettings.swift in Sources */,
+				224187F12EDA0CDB00F16EC8 /* CharacterCard.swift in Sources */,
+				224187E72EDA08CF00F16EC8 /* FalseFriend.swift in Sources */,
+				224187DF2EDA08AE00F16EC8 /* SearchResultRow.swift in Sources */,
 				A0000045000000000000001 /* TestRecord.swift in Sources */,
+				224188192EDF588E00F16EC8 /* AppIconPreview.swift in Sources */,
+				224187F92EDA784000F16EC8 /* FalseFriendRow.swift in Sources */,
+				224188112EDDB35D00F16EC8 /* SettingsView.swift in Sources */,
 				A0000047000000000000001 /* DatabaseTestView.swift in Sources */,
+				2241880E2EDB03E300F16EC8 /* HistoryService.swift in Sources */,
+				2241881C2EDF594000F16EC8 /* LaunchScreenView.swift in Sources */,
+				A0000049000000000000001 /* CharacterRepository.swift in Sources */,
+				A0000051000000000000001 /* DatabaseManager.swift in Sources */,
+				A0000053000000000000001 /* FalseFriendRepository.swift in Sources */,
 				A0000001000000000000001 /* YomikaeApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		224188302EDFBB1000F16EC8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A0000030000000000000001 /* Yomikae */;
+			targetProxy = 2241882F2EDFBB1000F16EC8 /* PBXContainerItemProxy */;
+		};
+		2241884C2EDFBC1800F16EC8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 2241884B2EDFBC1800F16EC8 /* GRDB */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		224188312EDFBB1000F16EC8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2VUTW7ZJ89;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = kfam.YomikaeTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Yomikae.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Yomikae";
+			};
+			name = Debug;
+		};
+		224188322EDFBB1000F16EC8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2VUTW7ZJ89;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = kfam.YomikaeTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Yomikae.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Yomikae";
+			};
+			name = Release;
+		};
 		A0000036000000000000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -443,6 +797,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		224188332EDFBB1000F16EC8 /* Build configuration list for PBXNativeTarget "YomikaeTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				224188312EDFBB1000F16EC8 /* Debug */,
+				224188322EDFBB1000F16EC8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		A0000031000000000000001 /* Build configuration list for PBXNativeTarget "Yomikae" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -475,6 +838,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		224188492EDFBBF600F16EC8 /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A0000042000000000000001 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			productName = GRDB;
+		};
+		2241884B2EDFBC1800F16EC8 /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A0000042000000000000001 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			productName = GRDB;
+		};
 		A0000041000000000000001 /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A0000042000000000000001 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
