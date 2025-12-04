@@ -8,8 +8,12 @@ struct SearchResultRow: View {
             // Large character display
             ZStack(alignment: .topTrailing) {
                 Text(character.character)
-                    .font(.system(size: 48, weight: .regular))
-                    .frame(width: 70, height: 70)
+                    .font(.system(size: characterFontSize, weight: .regular))
+                    .minimumScaleFactor(0.5)
+                    .lineLimit(1)
+                    .frame(minWidth: 70, maxWidth: 100)
+                    .frame(height: 70)
+                    .padding(.horizontal, 4)
                     .background(
                         RoundedRectangle(cornerRadius: 12)
                             .fill(Color(.systemGray6))
@@ -81,6 +85,20 @@ struct SearchResultRow: View {
     }
 
     // MARK: - Computed Properties
+
+    /// Dynamic font size based on character count
+    private var characterFontSize: CGFloat {
+        let count = character.character.count
+        if count == 1 {
+            return 48
+        } else if count == 2 {
+            return 36
+        } else if count == 3 {
+            return 28
+        } else {
+            return 24
+        }
+    }
 
     /// Returns the first available Japanese reading (prioritizes on'yomi)
     private var japaneseReading: String {

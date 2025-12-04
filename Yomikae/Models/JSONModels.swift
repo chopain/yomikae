@@ -114,7 +114,9 @@ struct FalseFriendJSONV2: Codable {
         return FalseFriend(
             id: id,
             character: characters,
+            jpReading: jpReading,
             jpMeanings: jpMeanings,
+            cnPinyin: cnPinyin,
             cnMeaningsSimplified: cnMeaningsSimplified,
             cnMeaningsTraditional: cnMeaningsTraditional,
             severity: severityEnum,
@@ -130,25 +132,23 @@ struct FalseFriendJSONV2: Codable {
 
 /// JSON representation of Japanese reading data
 struct JapaneseDataJSON: Codable {
-    let readings: [String]
+    let onyomi: [String]
+    let kunyomi: [String]
     let meanings: [String]
-    let kunReadings: [String]
-    let onReadings: [String]
     let jlptLevel: Int?
 
     enum CodingKeys: String, CodingKey {
-        case readings
+        case onyomi
+        case kunyomi
         case meanings
-        case kunReadings = "kun_readings"
-        case onReadings = "on_readings"
         case jlptLevel = "jlpt_level"
     }
 
-    /// Convert to database model - JapaneseReading uses onyomi/kunyomi
+    /// Convert to database model
     func toJapaneseReading() -> JapaneseReading {
         return JapaneseReading(
-            onyomi: onReadings,
-            kunyomi: kunReadings,
+            onyomi: onyomi,
+            kunyomi: kunyomi,
             meanings: meanings,
             jlptLevel: jlptLevel
         )
@@ -157,61 +157,53 @@ struct JapaneseDataJSON: Codable {
 
 /// JSON representation of Chinese reading data
 struct ChineseDataJSON: Codable {
-    let pinyinSimplified: String
-    let pinyinTraditional: String
-    let meaningsSimplified: [String]
-    let meaningsTraditional: [String]
+    let pinyin: [String]
+    let meanings: [String]
+    let simplified: String?
+    let traditional: String?
 
-    enum CodingKeys: String, CodingKey {
-        case pinyinSimplified = "pinyin_simplified"
-        case pinyinTraditional = "pinyin_traditional"
-        case meaningsSimplified = "meanings_simplified"
-        case meaningsTraditional = "meanings_traditional"
-    }
-
-    /// Convert to database model - ChineseReading uses pinyin array and optional simplified/traditional
+    /// Convert to database model
     func toChineseReading() -> ChineseReading {
-        // Combine both pinyins into an array, removing duplicates
-        let pinyinArray = Array(Set([pinyinSimplified, pinyinTraditional]))
-
         return ChineseReading(
-            pinyin: pinyinArray,
-            simplified: pinyinSimplified,
-            traditional: pinyinTraditional,
-            meaningsSimplified: meaningsSimplified,
-            meaningsTraditional: meaningsTraditional
+            pinyin: pinyin,
+            simplified: simplified,
+            traditional: traditional,
+            meaningsSimplified: meanings,
+            meaningsTraditional: meanings
         )
     }
 }
 
 /// JSON representation of a character for import
 struct CharacterJSON: Codable {
-    let id: String
     let character: String
-    let isFalseFriend: Bool
-    let frequencyRank: Int?
     let japanese: JapaneseDataJSON?
     let chinese: ChineseDataJSON?
+    let strokeCount: Int?
+    let radical: String?
+    let frequencyRank: Int?
+    let falseFriendId: String?
 
     enum CodingKeys: String, CodingKey {
-        case id
         case character
-        case isFalseFriend = "is_false_friend"
-        case frequencyRank = "frequency_rank"
         case japanese
         case chinese
+        case strokeCount = "stroke_count"
+        case radical
+        case frequencyRank = "frequency_rank"
+        case falseFriendId = "false_friend_id"
     }
 
-    /// Convert JSON model to database models
+    /// Convert JSON model to database model
     func toCharacter() -> Character {
         return Character(
             character: character,
             japanese: japanese?.toJapaneseReading(),
             chinese: chinese?.toChineseReading(),
-            strokeCount: nil, // Not in JSON - can be added later
-            radical: nil, // Not in JSON - can be added later
+            strokeCount: strokeCount,
+            radical: radical,
             frequencyRank: frequencyRank,
-            falseFriendId: isFalseFriend ? "ff_\(character)" : nil // Generate ID if false friend
+            falseFriendId: falseFriendId
         )
     }
 }
@@ -371,11 +363,6 @@ extension CharacterJSON {
     func validate() throws {
         guard !character.isEmpty else {
             throw JSONImportError.invalidValue(field: "character", value: "empty")
-        }
-
-        // At least one of japanese or chinese should be present
-        guard japanese != nil || chinese != nil else {
-            throw JSONImportError.invalidValue(field: "japanese/chinese", value: "both nil")
         }
     }
 }

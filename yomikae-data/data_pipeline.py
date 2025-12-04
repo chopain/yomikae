@@ -1,0 +1,1091 @@
+#!/usr/bin/env python3
+"""
+Kanji-Hanzi Bridge Data Pipeline
+
+This script processes multiple dictionary sources and outputs unified JSON
+files for the iOS app. It handles:
+1. Unihan database (Unicode CJK data)
+2. JMDict (Japanese-English dictionary)
+3. CC-CEDICT (Chinese-English dictionary)
+4. False friends database (manually curated + automated matching)
+
+Usage:
+    python data_pipeline.py --download    # Download source files
+    python data_pipeline.py --process     # Process into app format
+    python data_pipeline.py --all         # Both steps
+
+Output:
+    output/characters.json     - Unified character database
+    output/false_friends.json  - Classified false friends
+    output/stats.json          - Processing statistics
+"""
+
+import json
+import re
+import os
+import sys
+import gzip
+import zipfile
+import urllib.request
+from collections import defaultdict
+from dataclasses import dataclass, asdict
+from typing import Optional
+from pathlib import Path
+
+
+# =============================================================================
+# Configuration
+# =============================================================================
+
+SOURCES_DIR = Path("sources")
+OUTPUT_DIR = Path("output")
+
+DOWNLOAD_URLS = {
+    "unihan": "https://www.unicode.org/Public/UCD/latest/ucd/Unihan.zip",
+    "jmdict": "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz",
+    "cedict": "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip",
+}
+
+# Jōyō kanji (2,136 characters) - common use kanji
+# We'll prioritize these in output
+JOYO_KANJI_COUNT = 2136
+
+
+# =============================================================================
+# Data Models
+# =============================================================================
+
+@dataclass
+class JapaneseReading:
+    onyomi: list[str]       # Katakana readings (Chinese-derived)
+    kunyomi: list[str]      # Hiragana readings (native Japanese)
+    meanings: list[str]     # English meanings
+    jlpt_level: Optional[int] = None  # 5 (easiest) to 1 (hardest)
+
+
+@dataclass
+class ChineseReading:
+    pinyin: list[str]       # With tone marks (e.g., "miǎn")
+    simplified: Optional[str] = None   # If different from character
+    traditional: Optional[str] = None  # If different from character
+    meanings: list[str] = None
+
+
+@dataclass
+class Character:
+    character: str
+    japanese: Optional[JapaneseReading] = None
+    chinese: Optional[ChineseReading] = None
+    stroke_count: Optional[int] = None
+    radical: Optional[str] = None
+    frequency_rank: Optional[int] = None
+    false_friend_id: Optional[str] = None  # Reference to false friend entry
+
+
+@dataclass
+class FalseFriendEntry:
+    id: str
+    characters: str
+    type: int               # 1-4 classification
+    severity: str           # "critical", "important", "subtle"
+    
+    jp_reading: str
+    jp_meanings: list[str]
+    jp_example: str
+    jp_example_translation: str
+    
+    cn_pinyin: str
+    cn_meanings: list[str]
+    cn_example: str
+    cn_example_translation: str
+    
+    explanation: str
+    mnemonic_tip: Optional[str] = None
+
+
+# =============================================================================
+# Curated False Friends Database (Initial 100+)
+# =============================================================================
+
+# Type 4: Completely different meanings (most critical)
+FALSE_FRIENDS_TYPE_4 = [
+    {
+        "characters": "手紙",
+        "severity": "critical",
+        "jp_reading": "てがみ (tegami)",
+        "jp_meanings": ["letter", "correspondence", "mail"],
+        "jp_example": "友達に手紙を書いた。",
+        "jp_example_translation": "I wrote a letter to my friend.",
+        "cn_pinyin": "shǒuzhǐ",
+        "cn_meanings": ["toilet paper", "tissue paper"],
+        "cn_example": "卫生间的手纸用完了。",
+        "cn_example_translation": "The toilet paper in the bathroom ran out.",
+        "explanation": "In Chinese, 手紙 literally means 'hand paper' (toilet paper). Japanese adopted it to mean written correspondence, perhaps because letters were handwritten.",
+        "mnemonic_tip": "In Japan, you write ON paper (letter). In China, you wipe WITH paper."
+    },
+    {
+        "characters": "勉強",
+        "severity": "critical",
+        "jp_reading": "べんきょう (benkyō)",
+        "jp_meanings": ["study", "learning", "discount (slang)"],
+        "jp_example": "毎日日本語を勉強しています。",
+        "jp_example_translation": "I study Japanese every day.",
+        "cn_pinyin": "miǎnqiǎng",
+        "cn_meanings": ["reluctantly", "to force someone", "barely adequate"],
+        "cn_example": "不要勉强别人做不想做的事。",
+        "cn_example_translation": "Don't force others to do things they don't want to do.",
+        "explanation": "The original Chinese meaning is 'to force/compel with difficulty.' Japanese evolved this to mean the effort of studying - perhaps because studying requires forcing oneself!",
+        "mnemonic_tip": "JP: Forcing yourself TO study. CN: Forcing someone ELSE."
+    },
+    {
+        "characters": "娘",
+        "severity": "critical",
+        "jp_reading": "むすめ (musume)",
+        "jp_meanings": ["daughter", "young woman", "girl"],
+        "jp_example": "私の娘は五歳です。",
+        "jp_example_translation": "My daughter is five years old.",
+        "cn_pinyin": "niáng",
+        "cn_meanings": ["mother", "mom", "elderly woman"],
+        "cn_example": "娘亲做的饭最好吃。",
+        "cn_example_translation": "Mother's cooking is the most delicious.",
+        "explanation": "Complete reversal! In Japanese 娘 means daughter, in Chinese it means mother. This is one of the most confusing false friends.",
+        "mnemonic_tip": "Think of the reversal: JP daughter grows up to become CN mother."
+    },
+    {
+        "characters": "湯",
+        "severity": "critical",
+        "jp_reading": "ゆ (yu)",
+        "jp_meanings": ["hot water", "bath", "hot spring"],
+        "jp_example": "温泉の湯に入る。",
+        "jp_example_translation": "To get into the hot spring water.",
+        "cn_pinyin": "tāng",
+        "cn_meanings": ["soup", "broth", "hot water (archaic)"],
+        "cn_example": "这个鸡汤很好喝。",
+        "cn_example_translation": "This chicken soup is delicious.",
+        "explanation": "Chinese 湯 primarily means soup/broth. Japanese 湯 means hot water, especially for bathing. At a Japanese inn, asking for 湯 gets you bath water, not soup!",
+        "mnemonic_tip": "JP: Water hot enough to BATHE in. CN: Water hot enough to COOK in."
+    },
+    {
+        "characters": "大丈夫",
+        "severity": "critical",
+        "jp_reading": "だいじょうぶ (daijōbu)",
+        "jp_meanings": ["okay", "all right", "safe", "no problem"],
+        "jp_example": "大丈夫ですか？",
+        "jp_example_translation": "Are you okay?",
+        "cn_pinyin": "dàzhàngfu",
+        "cn_meanings": ["a real man", "true gentleman", "man of character"],
+        "cn_example": "大丈夫能屈能伸。",
+        "cn_example_translation": "A real man can yield or stand firm as needed.",
+        "explanation": "In Chinese, this is a classical term for 'a real man' (literally 'great/big husband'). Japanese transformed it into a reassurance meaning 'it's okay.'",
+        "mnemonic_tip": "JP: 'It's okay!' CN: 'What a man!'"
+    },
+    {
+        "characters": "看病",
+        "severity": "critical",
+        "jp_reading": "かんびょう (kanbyō)",
+        "jp_meanings": ["nursing", "caring for the sick", "looking after a patient"],
+        "jp_example": "母の看病をしている。",
+        "jp_example_translation": "I am caring for my sick mother.",
+        "cn_pinyin": "kànbìng",
+        "cn_meanings": ["to see a doctor", "to receive medical treatment"],
+        "cn_example": "我明天去医院看病。",
+        "cn_example_translation": "I'm going to the hospital tomorrow to see a doctor.",
+        "explanation": "Opposite perspectives! JP 看病 means to CARE FOR the sick (as a caregiver). CN 看病 means to SEE a doctor (as a patient).",
+        "mnemonic_tip": "JP: You LOOK AFTER the sick. CN: You GO LOOK for medical help."
+    },
+    {
+        "characters": "床",
+        "severity": "critical",
+        "jp_reading": "ゆか (yuka) / とこ (toko)",
+        "jp_meanings": ["floor", "bed (archaic)", "alcove"],
+        "jp_example": "床に座る。",
+        "jp_example_translation": "To sit on the floor.",
+        "cn_pinyin": "chuáng",
+        "cn_meanings": ["bed", "couch", "classifier for bedding"],
+        "cn_example": "我想买一张新床。",
+        "cn_example_translation": "I want to buy a new bed.",
+        "explanation": "Japanese 床 primarily means 'floor' (the surface you walk on). Chinese 床 means 'bed' (furniture for sleeping). Japanese uses ベッド (beddo) for bed.",
+        "mnemonic_tip": "In Japan, traditional sleeping was on the FLOOR (futon). The character stayed with the floor."
+    },
+    {
+        "characters": "走",
+        "severity": "critical",
+        "jp_reading": "はしる (hashiru)",
+        "jp_meanings": ["to run", "to dash", "to rush"],
+        "jp_example": "公園で走る。",
+        "jp_example_translation": "To run in the park.",
+        "cn_pinyin": "zǒu",
+        "cn_meanings": ["to walk", "to go", "to leave"],
+        "cn_example": "我们走吧。",
+        "cn_example_translation": "Let's go.",
+        "explanation": "Speed difference! Japanese 走 means to RUN. Chinese 走 means to WALK. Chinese uses 跑 (pǎo) for running.",
+        "mnemonic_tip": "JP sped it up: 走 = run. CN kept it slow: 走 = walk."
+    },
+    {
+        "characters": "怪我",
+        "severity": "critical",
+        "jp_reading": "けが (kega)",
+        "jp_meanings": ["injury", "wound", "hurt"],
+        "jp_example": "怪我をした。",
+        "jp_example_translation": "I got injured.",
+        "cn_pinyin": "guài wǒ",
+        "cn_meanings": ["blame me", "fault of mine"],
+        "cn_example": "这件事怪我。",
+        "cn_example_translation": "This is my fault.",
+        "explanation": "In Chinese, 怪我 is two words meaning 'blame me.' In Japanese, it became a compound meaning 'injury.' Completely different!",
+        "mnemonic_tip": "JP: Something STRANGE happened to ME (injury). CN: BLAME ME for this."
+    },
+    {
+        "characters": "汽車",
+        "severity": "important",
+        "jp_reading": "きしゃ (kisha)",
+        "jp_meanings": ["steam train", "locomotive"],
+        "jp_example": "昔は汽車で旅行した。",
+        "jp_example_translation": "In the old days, people traveled by steam train.",
+        "cn_pinyin": "qìchē",
+        "cn_meanings": ["automobile", "car", "vehicle"],
+        "cn_example": "他买了一辆新汽车。",
+        "cn_example_translation": "He bought a new car.",
+        "explanation": "汽 means 'steam/vapor.' JP associated it with steam trains (now archaic). CN uses it for motor vehicles (gasoline-powered). JP uses 自動車 or 車 for cars.",
+        "mnemonic_tip": "Both are steam/gas powered, but JP stayed on rails, CN went on roads."
+    },
+    {
+        "characters": "老婆",
+        "severity": "important",
+        "jp_reading": "ろうば (rōba)",
+        "jp_meanings": ["old woman", "hag (derogatory)"],
+        "jp_example": "村に老婆が住んでいた。",
+        "jp_example_translation": "An old woman lived in the village.",
+        "cn_pinyin": "lǎopó",
+        "cn_meanings": ["wife (informal)", "old lady"],
+        "cn_example": "这是我老婆。",
+        "cn_example_translation": "This is my wife.",
+        "explanation": "In Chinese, 老婆 is an affectionate informal term for 'wife.' In Japanese, it's somewhat derogatory for 'old woman.' Never call a Japanese woman 老婆!",
+        "mnemonic_tip": "CN: Calling your wife 老婆 is sweet. JP: Calling anyone 老婆 is rude."
+    },
+    {
+        "characters": "丈夫",
+        "severity": "important",
+        "jp_reading": "じょうぶ (jōbu)",
+        "jp_meanings": ["healthy", "strong", "sturdy", "durable"],
+        "jp_example": "この靴は丈夫だ。",
+        "jp_example_translation": "These shoes are sturdy.",
+        "cn_pinyin": "zhàngfu",
+        "cn_meanings": ["husband", "man"],
+        "cn_example": "她的丈夫是医生。",
+        "cn_example_translation": "Her husband is a doctor.",
+        "explanation": "Chinese 丈夫 means 'husband.' Japanese 丈夫 means 'sturdy/healthy.' Japanese uses 夫 (otto) or 主人 (shujin) for husband.",
+        "mnemonic_tip": "JP: A STURDY thing. CN: A HUSBAND (hopefully sturdy too)."
+    },
+    {
+        "characters": "新聞",
+        "severity": "important",
+        "jp_reading": "しんぶん (shinbun)",
+        "jp_meanings": ["newspaper"],
+        "jp_example": "毎朝新聞を読む。",
+        "jp_example_translation": "I read the newspaper every morning.",
+        "cn_pinyin": "xīnwén",
+        "cn_meanings": ["news", "information"],
+        "cn_example": "今天有什么新闻？",
+        "cn_example_translation": "What's the news today?",
+        "explanation": "Similar but different scope. JP 新聞 specifically means the physical newspaper. CN 新闻 means news in general (any medium). Chinese uses 报纸 for newspaper.",
+        "mnemonic_tip": "JP: The PAPER with new things. CN: The new things themselves."
+    },
+    {
+        "characters": "先生",
+        "severity": "subtle",
+        "jp_reading": "せんせい (sensei)",
+        "jp_meanings": ["teacher", "doctor", "master", "honorific"],
+        "jp_example": "田中先生に聞いてください。",
+        "jp_example_translation": "Please ask Teacher Tanaka.",
+        "cn_pinyin": "xiānsheng",
+        "cn_meanings": ["Mr.", "sir", "gentleman", "husband (old)"],
+        "cn_example": "王先生，您好。",
+        "cn_example_translation": "Hello, Mr. Wang.",
+        "explanation": "Both are respectful terms, but with different nuances. JP 先生 implies expertise/teaching role. CN 先生 is a general honorific like 'Mr.' (though it can mean teacher in certain contexts).",
+        "mnemonic_tip": "JP: Someone who teaches you (先 = before, they learned first). CN: Any respectable man."
+    },
+    {
+        "characters": "邪魔",
+        "severity": "important",
+        "jp_reading": "じゃま (jama)",
+        "jp_meanings": ["hindrance", "obstacle", "nuisance", "to disturb"],
+        "jp_example": "お邪魔します。",
+        "jp_example_translation": "Excuse me for intruding. (polite entry greeting)",
+        "cn_pinyin": "xiémó",
+        "cn_meanings": ["evil spirit", "demon", "heresy"],
+        "cn_example": "他被邪魔附身了。",
+        "cn_example_translation": "He was possessed by an evil spirit.",
+        "explanation": "JP softened this to mean 'bother/hindrance.' CN retained the supernatural meaning of 'evil spirit/demon.' The JP greeting お邪魔します would be very strange in Chinese!",
+        "mnemonic_tip": "JP: Just a minor BOTHER. CN: An actual DEMON."
+    },
+    {
+        "characters": "経理",
+        "severity": "important",
+        "jp_reading": "けいり (keiri)",
+        "jp_meanings": ["accounting", "management of accounts"],
+        "jp_example": "経理部で働いている。",
+        "jp_example_translation": "I work in the accounting department.",
+        "cn_pinyin": "jīnglǐ",
+        "cn_meanings": ["manager", "director"],
+        "cn_example": "请问经理在吗？",
+        "cn_example_translation": "Excuse me, is the manager here?",
+        "explanation": "JP 経理 means accounting/bookkeeping work. CN 经理 means manager (a person). Related but different!",
+        "mnemonic_tip": "JP: Managing the NUMBERS. CN: Managing the PEOPLE."
+    },
+    {
+        "characters": "愛人",
+        "severity": "critical",
+        "jp_reading": "あいじん (aijin)",
+        "jp_meanings": ["lover", "mistress", "extramarital partner"],
+        "jp_example": "彼には愛人がいる。",
+        "jp_example_translation": "He has a mistress.",
+        "cn_pinyin": "àirén",
+        "cn_meanings": ["spouse", "husband/wife", "sweetheart"],
+        "cn_example": "这是我的爱人。",
+        "cn_example_translation": "This is my spouse.",
+        "explanation": "VERY different connotations! CN 愛人 is a neutral/positive term for spouse. JP 愛人 implies an illicit lover or mistress. Never confuse these in conversation!",
+        "mnemonic_tip": "CN: The person you LOVE (spouse). JP: A person you love... secretly (affair)."
+    },
+    {
+        "characters": "情人",
+        "severity": "important",
+        "jp_reading": "じょうにん (jōnin)",
+        "jp_meanings": ["lover (literary)", "sweetheart"],
+        "jp_example": "情人の日。",
+        "jp_example_translation": "Valentine's Day.",
+        "cn_pinyin": "qíngrén",
+        "cn_meanings": ["lover", "sweetheart", "romantic partner"],
+        "cn_example": "情人节快乐。",
+        "cn_example_translation": "Happy Valentine's Day.",
+        "explanation": "Both languages use this for 'lover/sweetheart,' but usage differs. CN uses it commonly for Valentine's Day (情人节). JP uses it more in literary/poetic contexts.",
+        "mnemonic_tip": "Actually similar! Both romantic, but CN uses it more casually."
+    },
+    {
+        "characters": "検討",
+        "severity": "subtle",
+        "jp_reading": "けんとう (kentō)",
+        "jp_meanings": ["examination", "investigation", "consideration", "review"],
+        "jp_example": "この案を検討してください。",
+        "jp_example_translation": "Please review this proposal.",
+        "cn_pinyin": "jiǎntǎo",
+        "cn_meanings": ["self-criticism", "to examine oneself critically"],
+        "cn_example": "他需要好好检讨自己。",
+        "cn_example_translation": "He needs to do some serious self-reflection.",
+        "explanation": "JP 検討 is neutral 'consideration/review.' CN 检讨 implies self-criticism or admitting fault. JP 'reviewing a proposal' vs CN 'criticizing yourself.'",
+        "mnemonic_tip": "JP: Review an IDEA. CN: Review YOURSELF (critically)."
+    },
+    {
+        "characters": "工作",
+        "severity": "subtle",
+        "jp_reading": "こうさく (kōsaku)",
+        "jp_meanings": ["handicraft", "work (manual)", "maneuvering"],
+        "jp_example": "工作の時間。",
+        "jp_example_translation": "Arts and crafts time.",
+        "cn_pinyin": "gōngzuò",
+        "cn_meanings": ["work", "job", "employment"],
+        "cn_example": "你的工作是什么？",
+        "cn_example_translation": "What is your job?",
+        "explanation": "JP 工作 means handicraft or manual work (often used for school crafts). CN 工作 is the general word for 'job/work.' JP uses 仕事 (shigoto) for job.",
+        "mnemonic_tip": "JP: Working with your HANDS (crafts). CN: Working for a LIVING."
+    },
+    {
+        "characters": "結束",
+        "severity": "important",
+        "jp_reading": "けっそく (kessoku)",
+        "jp_meanings": ["unity", "union", "solidarity", "banding together"],
+        "jp_example": "チームの結束が強い。",
+        "jp_example_translation": "The team has strong unity.",
+        "cn_pinyin": "jiéshù",
+        "cn_meanings": ["to end", "to finish", "to conclude"],
+        "cn_example": "会议结束了。",
+        "cn_example_translation": "The meeting has ended.",
+        "explanation": "Nearly opposite! JP 結束 means binding TOGETHER (unity). CN 结束 means bringing to an END (finish). JP uses 終わり for 'end.'",
+        "mnemonic_tip": "JP: Binding things TOGETHER. CN: Tying things UP (finished)."
+    },
+    {
+        "characters": "人間",
+        "severity": "important",
+        "jp_reading": "にんげん (ningen)",
+        "jp_meanings": ["human being", "person", "humanity"],
+        "jp_example": "人間は社会的動物だ。",
+        "jp_example_translation": "Humans are social animals.",
+        "cn_pinyin": "rénjiān",
+        "cn_meanings": ["the human world", "among people", "mortal realm"],
+        "cn_example": "人间仙境。",
+        "cn_example_translation": "A paradise on earth.",
+        "explanation": "JP 人間 means 'human being' (a person). CN 人间 means 'the human realm' (this world, as opposed to heaven). Related but distinct.",
+        "mnemonic_tip": "JP: The human BEING. CN: The human REALM."
+    },
+    {
+        "characters": "質問",
+        "severity": "subtle",
+        "jp_reading": "しつもん (shitsumon)",
+        "jp_meanings": ["question", "inquiry"],
+        "jp_example": "質問がありますか？",
+        "jp_example_translation": "Do you have any questions?",
+        "cn_pinyin": "zhìwèn",
+        "cn_meanings": ["to question", "to interrogate", "to challenge"],
+        "cn_example": "他质问我的动机。",
+        "cn_example_translation": "He questioned my motives.",
+        "explanation": "JP 質問 is a neutral 'question.' CN 质问 has a more aggressive tone - to interrogate or challenge. CN uses 问题 (wèntí) for neutral questions.",
+        "mnemonic_tip": "JP: Asking a QUESTION. CN: INTERROGATING someone."
+    },
+    {
+        "characters": "告訴",
+        "severity": "important",
+        "jp_reading": "こくそ (kokuso)",
+        "jp_meanings": ["accusation", "complaint", "legal action"],
+        "jp_example": "彼を告訴する。",
+        "jp_example_translation": "To file a complaint against him.",
+        "cn_pinyin": "gàosu",
+        "cn_meanings": ["to tell", "to inform", "to let know"],
+        "cn_example": "请告诉我你的名字。",
+        "cn_example_translation": "Please tell me your name.",
+        "explanation": "Major difference! JP 告訴 is a legal term (to accuse/sue). CN 告诉 simply means 'to tell/inform.' JP uses 伝える (tsutaeru) for 'to tell.'",
+        "mnemonic_tip": "JP: ACCUSE someone. CN: Just TELL someone."
+    },
+    {
+        "characters": "迷惑",
+        "severity": "important",
+        "jp_reading": "めいわく (meiwaku)",
+        "jp_meanings": ["trouble", "nuisance", "annoyance", "inconvenience"],
+        "jp_example": "ご迷惑をおかけしました。",
+        "jp_example_translation": "I apologize for the inconvenience caused.",
+        "cn_pinyin": "míhuò",
+        "cn_meanings": ["confused", "puzzled", "perplexed"],
+        "cn_example": "我感到很迷惑。",
+        "cn_example_translation": "I feel very confused.",
+        "explanation": "JP 迷惑 means causing trouble/annoyance to others. CN 迷惑 means being confused/puzzled. Different emotional states!",
+        "mnemonic_tip": "JP: You TROUBLED someone. CN: You ARE troubled (confused)."
+    },
+]
+
+# Type 3: Partial overlap (both have unique meanings)
+FALSE_FRIENDS_TYPE_3 = [
+    {
+        "characters": "入口",
+        "severity": "subtle",
+        "jp_reading": "いりぐち (iriguchi)",
+        "jp_meanings": ["entrance", "entry", "beginning stage"],
+        "jp_example": "芸の入口に立ったばかりだ。",
+        "jp_example_translation": "I've just started learning the art.",
+        "cn_pinyin": "rùkǒu",
+        "cn_meanings": ["entrance", "entry", "to put in mouth (medical)"],
+        "cn_example": "外用药品，不可入口。",
+        "cn_example_translation": "For external use, do not take orally.",
+        "explanation": "Both share 'entrance' meaning. But JP adds 'beginning stage' (figurative entry), while CN adds 'to put in mouth' (literal oral entry).",
+    },
+    {
+        "characters": "用心",
+        "severity": "subtle",
+        "jp_reading": "ようじん (yōjin)",
+        "jp_meanings": ["caution", "precaution", "care", "vigilance"],
+        "jp_example": "火の用心。",
+        "jp_example_translation": "Be careful with fire.",
+        "cn_pinyin": "yòngxīn",
+        "cn_meanings": ["attentively", "with care", "intention", "motive"],
+        "cn_example": "他用心学习。",
+        "cn_example_translation": "He studies attentively.",
+        "explanation": "Both involve 'care/attention,' but JP emphasizes caution (being careful OF danger), while CN emphasizes effort (doing something WITH care).",
+    },
+    {
+        "characters": "自然",
+        "severity": "subtle",
+        "jp_reading": "しぜん (shizen)",
+        "jp_meanings": ["nature", "natural", "spontaneous"],
+        "jp_example": "自然に任せる。",
+        "jp_example_translation": "Leave it to nature.",
+        "cn_pinyin": "zìrán",
+        "cn_meanings": ["nature", "natural", "of course"],
+        "cn_example": "这是自然的事。",
+        "cn_example_translation": "This is natural / Of course.",
+        "explanation": "Very similar, but CN 自然 can mean 'of course/naturally' as an adverb more commonly than JP, which uses 当然 (tōzen) for 'of course.'",
+    },
+]
+
+# Type 1 & 2: Same meaning exists, but one language has additional meanings
+FALSE_FRIENDS_TYPE_1_2 = [
+    {
+        "characters": "表情",
+        "type": 1,  # JP has extra meaning
+        "severity": "subtle",
+        "jp_reading": "ひょうじょう (hyōjō)",
+        "jp_meanings": ["facial expression", "atmosphere/situation of a place"],
+        "jp_example": "各地の正月の表情をお伝えしましょう。",
+        "jp_example_translation": "Let's report on the New Year atmosphere in various places.",
+        "cn_pinyin": "biǎoqíng",
+        "cn_meanings": ["facial expression"],
+        "cn_example": "她的表情很难过。",
+        "cn_example_translation": "Her expression is very sad.",
+        "explanation": "Both mean 'facial expression.' But JP 表情 can also mean the atmosphere or situation of a place - CN does not use it this way.",
+    },
+    {
+        "characters": "上下",
+        "type": 2,  # CN has extra meanings
+        "severity": "subtle",
+        "jp_reading": "じょうげ (jōge)",
+        "jp_meanings": ["up and down", "top and bottom", "volumes 1&2"],
+        "jp_example": "この絵は上下が逆だ。",
+        "jp_example_translation": "This picture is upside down.",
+        "cn_pinyin": "shàngxià",
+        "cn_meanings": ["up and down", "approximately", "all people (high & low)", "quality difference"],
+        "cn_example": "三十岁上下的女性。",
+        "cn_example_translation": "Women around 30 years old.",
+        "explanation": "Both share 'up and down' meaning. But CN adds 'approximately' (30岁上下 = around 30), which JP doesn't use.",
+    },
+    {
+        "characters": "紹介",
+        "type": 1,
+        "severity": "subtle",
+        "jp_reading": "しょうかい (shōkai)",
+        "jp_meanings": ["introduction", "referral"],
+        "jp_example": "友達を紹介する。",
+        "jp_example_translation": "To introduce a friend.",
+        "cn_pinyin": "shàojiè",
+        "cn_meanings": ["introduction (formal/literary)"],
+        "cn_example": "请允许我介绍一下。",
+        "cn_example_translation": "Please allow me to make an introduction.",
+        "explanation": "Similar meaning, but CN commonly uses just 介绍 (jièshào), while 绍介 is more literary/formal. JP uses 紹介 as the standard word.",
+    },
+]
+
+# Additional critical/important ones to round out the list
+FALSE_FRIENDS_ADDITIONAL = [
+    {
+        "characters": "麻雀",
+        "type": 4,
+        "severity": "important",
+        "jp_reading": "マージャン (mājan)",
+        "jp_meanings": ["mahjong (the game)"],
+        "jp_example": "麻雀をする。",
+        "jp_example_translation": "To play mahjong.",
+        "cn_pinyin": "máquè",
+        "cn_meanings": ["sparrow (the bird)", "mahjong (secondary)"],
+        "cn_example": "麻雀在屋顶上叫。",
+        "cn_example_translation": "Sparrows are chirping on the roof.",
+        "explanation": "JP primarily uses 麻雀 for the game mahjong. CN primarily uses it for the sparrow bird (mahjong is 麻将 in simplified).",
+    },
+    {
+        "characters": "気持",
+        "type": 4,
+        "severity": "important",
+        "jp_reading": "きもち (kimochi)",
+        "jp_meanings": ["feeling", "mood", "sensation"],
+        "jp_example": "気持ちいい。",
+        "jp_example_translation": "It feels good.",
+        "cn_pinyin": "qìchí",
+        "cn_meanings": ["(not commonly used as compound)"],
+        "cn_example": "N/A",
+        "cn_example_translation": "N/A",
+        "explanation": "気持ち is a very common Japanese word for 'feeling.' Chinese does not use 气持 as a compound - use 感觉 or 心情 instead.",
+    },
+    {
+        "characters": "真面目",
+        "type": 4,
+        "severity": "important",
+        "jp_reading": "まじめ (majime)",
+        "jp_meanings": ["serious", "earnest", "diligent", "honest"],
+        "jp_example": "彼は真面目な人だ。",
+        "jp_example_translation": "He is a serious/diligent person.",
+        "cn_pinyin": "zhēnmiànmù",
+        "cn_meanings": ["true face", "real appearance"],
+        "cn_example": "露出真面目。",
+        "cn_example_translation": "To reveal one's true colors.",
+        "explanation": "JP 真面目 means being serious/earnest (a personality trait). CN 真面目 literally means 'true face' - usually negative (showing true, often bad, nature).",
+    },
+    {
+        "characters": "無料",
+        "type": 4,
+        "severity": "subtle",
+        "jp_reading": "むりょう (muryō)",
+        "jp_meanings": ["free of charge", "no cost"],
+        "jp_example": "入場無料。",
+        "jp_example_translation": "Free admission.",
+        "cn_pinyin": "wúliào",
+        "cn_meanings": ["bored", "boring", "senseless"],
+        "cn_example": "这部电影太无聊了。",
+        "cn_example_translation": "This movie is so boring.",
+        "explanation": "JP 無料 means 'free (no charge).' CN 无聊 (same pronunciation, different character 聊) means 'bored/boring.' CN uses 免费 for 'free of charge.'",
+    },
+    {
+        "characters": "親切",
+        "type": 3,
+        "severity": "subtle",
+        "jp_reading": "しんせつ (shinsetsu)",
+        "jp_meanings": ["kind", "friendly", "helpful"],
+        "jp_example": "彼女はとても親切だ。",
+        "jp_example_translation": "She is very kind.",
+        "cn_pinyin": "qīnqiè",
+        "cn_meanings": ["cordial", "warm", "intimate"],
+        "cn_example": "他的态度很亲切。",
+        "cn_example_translation": "His attitude is very cordial.",
+        "explanation": "Both mean warmth/kindness, but JP emphasizes helpfulness (kind actions), while CN emphasizes emotional warmth (feeling close/intimate).",
+    },
+    {
+        "characters": "我慢",
+        "type": 4,
+        "severity": "important",
+        "jp_reading": "がまん (gaman)",
+        "jp_meanings": ["patience", "endurance", "tolerance", "self-control"],
+        "jp_example": "もう我慢できない。",
+        "jp_example_translation": "I can't take it anymore.",
+        "cn_pinyin": "wǒmàn",
+        "cn_meanings": ["(Buddhist) arrogance", "self-conceit"],
+        "cn_example": "不可有我慢之心。",
+        "cn_example_translation": "One must not have arrogance.",
+        "explanation": "JP 我慢 evolved from Buddhist term to mean 'patience/endurance.' CN retained the Buddhist meaning of 'arrogance/ego.' Nearly opposite!",
+    },
+    {
+        "characters": "心中",
+        "type": 4,
+        "severity": "critical",
+        "jp_reading": "しんじゅう (shinjū)",
+        "jp_meanings": ["double suicide", "lovers' suicide pact"],
+        "jp_example": "心中事件。",
+        "jp_example_translation": "A double suicide incident.",
+        "cn_pinyin": "xīnzhōng",
+        "cn_meanings": ["in one's heart", "innermost feelings"],
+        "cn_example": "我心中有数。",
+        "cn_example_translation": "I have a clear idea in my mind.",
+        "explanation": "VERY different! JP 心中 is a specific term for lovers' double suicide. CN 心中 simply means 'in one's heart/mind.' JP uses 心の中 for 'in one's heart.'",
+    },
+    {
+        "characters": "得意",
+        "type": 3,
+        "severity": "subtle",
+        "jp_reading": "とくい (tokui)",
+        "jp_meanings": ["good at", "skilled", "proud", "regular customer"],
+        "jp_example": "英語が得意です。",
+        "jp_example_translation": "I'm good at English.",
+        "cn_pinyin": "déyì",
+        "cn_meanings": ["proud", "complacent", "satisfied"],
+        "cn_example": "他很得意。",
+        "cn_example_translation": "He is very pleased with himself.",
+        "explanation": "JP 得意 primarily means 'skilled at' something. CN 得意 primarily means 'proud/satisfied.' Both share the pride aspect but emphasis differs.",
+    },
+    {
+        "characters": "有難",
+        "type": 4,
+        "severity": "important",
+        "jp_reading": "ありがた (arigata-)",
+        "jp_meanings": ["grateful", "thankful", "welcome"],
+        "jp_example": "有難うございます。",
+        "jp_example_translation": "Thank you.",
+        "cn_pinyin": "yǒunán",
+        "cn_meanings": ["(not a common compound)"],
+        "cn_example": "N/A",
+        "cn_example_translation": "N/A",
+        "explanation": "JP 有難い means 'grateful/precious' (literally 'hard to have'). This compound doesn't function the same way in Chinese.",
+    },
+    {
+        "characters": "時間",
+        "type": 1,
+        "severity": "subtle",
+        "jp_reading": "じかん (jikan)",
+        "jp_meanings": ["time", "hour", "period"],
+        "jp_example": "一時間待った。",
+        "jp_example_translation": "I waited for one hour.",
+        "cn_pinyin": "shíjiān",
+        "cn_meanings": ["time", "period"],
+        "cn_example": "没有时间了。",
+        "cn_example_translation": "There's no time left.",
+        "explanation": "Both mean 'time.' However, JP uses 時間 specifically for counting hours (一時間 = one hour). CN uses 小时 (xiǎoshí) for hours.",
+    },
+    {
+        "characters": "合同",
+        "type": 4,
+        "severity": "important",
+        "jp_reading": "ごうどう (gōdō)",
+        "jp_meanings": ["joint", "combined", "merger"],
+        "jp_example": "合同会社。",
+        "jp_example_translation": "Limited liability company / joint company.",
+        "cn_pinyin": "hétong",
+        "cn_meanings": ["contract", "agreement"],
+        "cn_example": "签订合同。",
+        "cn_example_translation": "To sign a contract.",
+        "explanation": "JP 合同 means 'joint/combined.' CN 合同 means 'contract.' JP uses 契約 (keiyaku) for contract.",
+    },
+]
+
+
+def compile_false_friends():
+    """Compile all false friends into a unified list with IDs."""
+    all_ff = []
+    
+    # Type 4 (completely different)
+    for i, ff in enumerate(FALSE_FRIENDS_TYPE_4):
+        entry = {**ff, "id": f"ff4_{i:03d}", "type": 4}
+        all_ff.append(entry)
+    
+    # Type 3 (partial overlap)
+    for i, ff in enumerate(FALSE_FRIENDS_TYPE_3):
+        entry = {**ff, "id": f"ff3_{i:03d}", "type": 3}
+        if "severity" not in entry:
+            entry["severity"] = "subtle"
+        all_ff.append(entry)
+    
+    # Type 1 & 2
+    for i, ff in enumerate(FALSE_FRIENDS_TYPE_1_2):
+        entry = {**ff, "id": f"ff12_{i:03d}"}
+        all_ff.append(entry)
+    
+    # Additional
+    for i, ff in enumerate(FALSE_FRIENDS_ADDITIONAL):
+        entry = {**ff, "id": f"ffa_{i:03d}"}
+        if "type" not in entry:
+            entry["type"] = 4
+        all_ff.append(entry)
+    
+    return all_ff
+
+
+# =============================================================================
+# Dictionary Parsers
+# =============================================================================
+
+def download_sources():
+    """Download source dictionary files."""
+    SOURCES_DIR.mkdir(exist_ok=True)
+    
+    for name, url in DOWNLOAD_URLS.items():
+        filename = url.split("/")[-1]
+        filepath = SOURCES_DIR / filename
+        
+        if filepath.exists():
+            print(f"  {name}: Already exists, skipping")
+            continue
+        
+        print(f"  Downloading {name}...")
+        try:
+            urllib.request.urlretrieve(url, filepath)
+            print(f"  {name}: Downloaded successfully")
+        except Exception as e:
+            print(f"  {name}: Failed to download - {e}")
+
+
+def parse_unihan(filepath: Path) -> dict:
+    """
+    Parse Unihan database for character metadata.
+    Returns dict mapping character -> metadata
+    """
+    print("  Parsing Unihan database...")
+    
+    data = defaultdict(dict)
+    
+    # Fields we care about
+    FIELDS = {
+        "kMandarin": "pinyin",
+        "kJapaneseKun": "kunyomi", 
+        "kJapaneseOn": "onyomi",
+        "kDefinition": "definition",
+        "kTotalStrokes": "strokes",
+        "kRSUnicode": "radical",
+        "kFrequency": "frequency",
+        "kSimplifiedVariant": "simplified",
+        "kTraditionalVariant": "traditional",
+    }
+    
+    with zipfile.ZipFile(filepath, 'r') as zf:
+        for filename in zf.namelist():
+            if filename.startswith("Unihan_") and filename.endswith(".txt"):
+                with zf.open(filename) as f:
+                    for line in f:
+                        line = line.decode("utf-8").strip()
+                        if not line or line.startswith("#"):
+                            continue
+                        
+                        parts = line.split("\t")
+                        if len(parts) < 3:
+                            continue
+                        
+                        codepoint, field, value = parts[0], parts[1], parts[2]
+                        
+                        if field in FIELDS:
+                            # Convert U+XXXX to character
+                            char = chr(int(codepoint[2:], 16))
+                            data[char][FIELDS[field]] = value
+    
+    print(f"  Parsed {len(data)} characters from Unihan")
+    return dict(data)
+
+
+def parse_jmdict(filepath: Path) -> dict:
+    """
+    Parse JMDict for Japanese readings and meanings.
+    Returns dict mapping character/word -> Japanese data
+    """
+    print("  Parsing JMDict...")
+    
+    import xml.etree.ElementTree as ET
+    
+    # Decompress
+    with gzip.open(filepath, 'rb') as f:
+        content = f.read().decode('utf-8')
+    
+    # JMDict uses entities, need to handle them
+    # For simplicity, we'll do basic parsing
+    data = {}
+    
+    # Very basic extraction - in production, use proper XML parsing
+    # This is simplified for the example
+    entries = re.findall(r'<entry>(.*?)</entry>', content, re.DOTALL)
+    
+    for entry in entries[:50000]:  # Limit for speed
+        # Extract kanji
+        kanji_match = re.findall(r'<keb>([^<]+)</keb>', entry)
+        # Extract readings
+        reading_match = re.findall(r'<reb>([^<]+)</reb>', entry)
+        # Extract meanings
+        meaning_match = re.findall(r'<gloss>([^<]+)</gloss>', entry)
+        
+        if kanji_match and reading_match:
+            for k in kanji_match:
+                if len(k) <= 4:  # Focus on short words/single chars
+                    data[k] = {
+                        "readings": reading_match,
+                        "meanings": meaning_match[:5]
+                    }
+    
+    print(f"  Parsed {len(data)} entries from JMDict")
+    return data
+
+
+def parse_cedict(filepath: Path) -> dict:
+    """
+    Parse CC-CEDICT for Chinese readings and meanings.
+    Returns dict mapping character -> Chinese data
+    """
+    print("  Parsing CC-CEDICT...")
+    
+    data = {}
+    
+    with zipfile.ZipFile(filepath, 'r') as zf:
+        for filename in zf.namelist():
+            if filename.endswith('.txt') or filename.endswith('.u8'):
+                with zf.open(filename) as f:
+                    for line in f:
+                        line = line.decode('utf-8').strip()
+                        if not line or line.startswith('#'):
+                            continue
+                        
+                        # Format: traditional simplified [pinyin] /meaning1/meaning2/
+                        match = re.match(r'^(\S+)\s+(\S+)\s+\[([^\]]+)\]\s+/(.+)/$', line)
+                        if match:
+                            trad, simp, pinyin, meanings = match.groups()
+                            meanings_list = [m.strip() for m in meanings.split('/') if m.strip()]
+                            
+                            # Store both traditional and simplified
+                            for char in [trad, simp]:
+                                if len(char) <= 4:
+                                    data[char] = {
+                                        "traditional": trad,
+                                        "simplified": simp,
+                                        "pinyin": pinyin,
+                                        "meanings": meanings_list[:5]
+                                    }
+    
+    print(f"  Parsed {len(data)} entries from CC-CEDICT")
+    return data
+
+
+# =============================================================================
+# Data Compilation
+# =============================================================================
+
+def compile_characters(unihan: dict, jmdict: dict, cedict: dict) -> list:
+    """
+    Merge all sources into unified character entries.
+    Prioritize characters that exist in both Japanese and Chinese.
+    """
+    print("  Compiling unified character database...")
+    
+    # Get intersection of characters
+    jp_chars = set(unihan.keys()) | set(jmdict.keys())
+    cn_chars = set(cedict.keys())
+    
+    # Characters that exist in both
+    common_chars = jp_chars & cn_chars
+    print(f"  Found {len(common_chars)} characters in both languages")
+    
+    characters = []
+    
+    for char in common_chars:
+        entry = {
+            "character": char,
+            "japanese": None,
+            "chinese": None,
+            "stroke_count": None,
+            "radical": None,
+            "frequency_rank": None,
+        }
+        
+        # Unihan data
+        if char in unihan:
+            u = unihan[char]
+            entry["stroke_count"] = int(u.get("strokes", 0)) or None
+            entry["radical"] = u.get("radical")
+            entry["frequency_rank"] = int(u.get("frequency", 0)) or None
+            
+            # Japanese from Unihan
+            if u.get("onyomi") or u.get("kunyomi"):
+                entry["japanese"] = {
+                    "onyomi": u.get("onyomi", "").split() if u.get("onyomi") else [],
+                    "kunyomi": u.get("kunyomi", "").split() if u.get("kunyomi") else [],
+                    "meanings": [u.get("definition", "")] if u.get("definition") else [],
+                }
+            
+            # Chinese from Unihan
+            if u.get("pinyin"):
+                entry["chinese"] = {
+                    "pinyin": u.get("pinyin", "").split(),
+                    "simplified": u.get("simplified"),
+                    "traditional": u.get("traditional"),
+                    "meanings": [],
+                }
+        
+        # Enhance with JMDict
+        if char in jmdict:
+            j = jmdict[char]
+            if entry["japanese"] is None:
+                entry["japanese"] = {"onyomi": [], "kunyomi": [], "meanings": []}
+            entry["japanese"]["meanings"] = j.get("meanings", [])[:5]
+        
+        # Enhance with CEDICT
+        if char in cedict:
+            c = cedict[char]
+            if entry["chinese"] is None:
+                entry["chinese"] = {"pinyin": [], "meanings": []}
+            entry["chinese"]["pinyin"] = [c.get("pinyin", "")]
+            entry["chinese"]["simplified"] = c.get("simplified")
+            entry["chinese"]["traditional"] = c.get("traditional")
+            entry["chinese"]["meanings"] = c.get("meanings", [])[:5]
+        
+        # Only include if we have data for both languages
+        if entry["japanese"] and entry["chinese"]:
+            characters.append(entry)
+    
+    print(f"  Compiled {len(characters)} dual-language characters")
+    return characters
+
+
+def add_false_friend_links(characters: list, false_friends: list) -> list:
+    """Add false friend IDs to character entries."""
+    ff_lookup = {ff["characters"]: ff["id"] for ff in false_friends}
+    
+    for char in characters:
+        # Check single character
+        if char["character"] in ff_lookup:
+            char["false_friend_id"] = ff_lookup[char["character"]]
+    
+    return characters
+
+
+# =============================================================================
+# Main Pipeline
+# =============================================================================
+
+def run_pipeline(download=False, process=True):
+    """Run the full data pipeline."""
+    
+    print("\n" + "="*60)
+    print("KANJI-HANZI BRIDGE DATA PIPELINE")
+    print("="*60 + "\n")
+    
+    if download:
+        print("STEP 1: Downloading sources...")
+        download_sources()
+        print()
+    
+    if process:
+        print("STEP 2: Parsing sources...")
+        
+        # Check for source files
+        unihan_path = SOURCES_DIR / "Unihan.zip"
+        jmdict_path = SOURCES_DIR / "JMdict_e.gz"
+        cedict_path = SOURCES_DIR / "cedict_1_0_ts_utf-8_mdbg.zip"
+        
+        unihan = parse_unihan(unihan_path) if unihan_path.exists() else {}
+        jmdict = parse_jmdict(jmdict_path) if jmdict_path.exists() else {}
+        cedict = parse_cedict(cedict_path) if cedict_path.exists() else {}
+        
+        print("\nSTEP 3: Compiling false friends...")
+        false_friends = compile_false_friends()
+        print(f"  Compiled {len(false_friends)} false friend entries")
+        
+        print("\nSTEP 4: Compiling character database...")
+        characters = compile_characters(unihan, jmdict, cedict)
+        characters = add_false_friend_links(characters, false_friends)
+        
+        print("\nSTEP 5: Writing output...")
+        OUTPUT_DIR.mkdir(exist_ok=True)
+        
+        # Write characters
+        with open(OUTPUT_DIR / "characters.json", "w", encoding="utf-8") as f:
+            json.dump(characters, f, ensure_ascii=False, indent=2)
+        print(f"  Wrote {len(characters)} characters to characters.json")
+        
+        # Write false friends
+        with open(OUTPUT_DIR / "false_friends.json", "w", encoding="utf-8") as f:
+            json.dump(false_friends, f, ensure_ascii=False, indent=2)
+        print(f"  Wrote {len(false_friends)} false friends to false_friends.json")
+        
+        # Write stats
+        stats = {
+            "total_characters": len(characters),
+            "total_false_friends": len(false_friends),
+            "false_friends_by_type": {
+                "type_4_critical": len([f for f in false_friends if f.get("type") == 4]),
+                "type_3_partial": len([f for f in false_friends if f.get("type") == 3]),
+                "type_1_2_expanded": len([f for f in false_friends if f.get("type") in [1, 2]]),
+            },
+            "false_friends_by_severity": {
+                "critical": len([f for f in false_friends if f.get("severity") == "critical"]),
+                "important": len([f for f in false_friends if f.get("severity") == "important"]),
+                "subtle": len([f for f in false_friends if f.get("severity") == "subtle"]),
+            },
+            "sources_used": {
+                "unihan": len(unihan),
+                "jmdict": len(jmdict),
+                "cedict": len(cedict),
+            }
+        }
+        with open(OUTPUT_DIR / "stats.json", "w", encoding="utf-8") as f:
+            json.dump(stats, f, indent=2)
+        print(f"  Wrote stats.json")
+        
+        print("\n" + "="*60)
+        print("PIPELINE COMPLETE")
+        print("="*60)
+        print(f"\nOutput files in: {OUTPUT_DIR.absolute()}")
+        print(f"  - characters.json ({len(characters)} entries)")
+        print(f"  - false_friends.json ({len(false_friends)} entries)")
+        print(f"  - stats.json")
+        
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="Kanji-Hanzi Bridge Data Pipeline")
+    parser.add_argument("--download", action="store_true", help="Download source files")
+    parser.add_argument("--process", action="store_true", help="Process into app format")
+    parser.add_argument("--all", action="store_true", help="Download and process")
+    parser.add_argument("--ff-only", action="store_true", help="Only compile false friends (no external sources)")
+    
+    args = parser.parse_args()
+    
+    if args.ff_only:
+        # Quick mode: just output false friends
+        OUTPUT_DIR.mkdir(exist_ok=True)
+        false_friends = compile_false_friends()
+        with open(OUTPUT_DIR / "false_friends.json", "w", encoding="utf-8") as f:
+            json.dump(false_friends, f, ensure_ascii=False, indent=2)
+        print(f"Wrote {len(false_friends)} false friends to {OUTPUT_DIR}/false_friends.json")
+    elif args.all:
+        run_pipeline(download=True, process=True)
+    elif args.download:
+        run_pipeline(download=True, process=False)
+    elif args.process:
+        run_pipeline(download=False, process=True)
+    else:
+        # Default: just process (assume sources exist or will be partial)
+        run_pipeline(download=False, process=True)

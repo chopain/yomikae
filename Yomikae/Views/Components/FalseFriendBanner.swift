@@ -243,7 +243,9 @@ struct FalseFriendBadge: View {
         falseFriend: FalseFriend(
             id: "ff1",
             character: "走",
+            jpReading: "はしる (hashiru)",
             jpMeanings: ["run"],
+            cnPinyin: "zǒu",
             cnMeaningsSimplified: ["walk"],
             cnMeaningsTraditional: ["walk"],
             severity: .critical,
@@ -264,7 +266,9 @@ struct FalseFriendBadge: View {
         falseFriend: FalseFriend(
             id: "ff2",
             character: "后",
+            jpReading: "こう (kō)",
             jpMeanings: ["emperor", "queen"],
+            cnPinyin: "hòu",
             cnMeaningsSimplified: ["after", "behind"],
             cnMeaningsTraditional: ["empress"],
             severity: .important,
@@ -288,7 +292,9 @@ struct FalseFriendBadge: View {
         falseFriend: FalseFriend(
             id: "ff2",
             character: "后",
+            jpReading: "こう (kō)",
             jpMeanings: ["emperor", "queen"],
+            cnPinyin: "hòu",
             cnMeaningsSimplified: ["after", "behind"],
             cnMeaningsTraditional: ["empress"],
             severity: .important,
@@ -312,7 +318,9 @@ struct FalseFriendBadge: View {
         falseFriend: FalseFriend(
             id: "ff3",
             character: "腺",
+            jpReading: "せん (sen)",
             jpMeanings: ["gland"],
+            cnPinyin: "xiàn",
             cnMeaningsSimplified: ["gland"],
             cnMeaningsTraditional: ["gland"],
             severity: .subtle,
@@ -358,7 +366,9 @@ struct FalseFriendBadge: View {
             falseFriend: FalseFriend(
                 id: "ff1",
                 character: "走",
+                jpReading: "はしる (hashiru)",
                 jpMeanings: ["run"],
+                cnPinyin: "zǒu",
                 cnMeaningsSimplified: ["walk"],
                 cnMeaningsTraditional: ["walk"],
                 severity: .critical,
@@ -376,7 +386,9 @@ struct FalseFriendBadge: View {
             falseFriend: FalseFriend(
                 id: "ff2",
                 character: "勉",
+                jpReading: "べん (ben)",
                 jpMeanings: ["strive"],
+                cnPinyin: "miǎn",
                 cnMeaningsSimplified: ["reluctantly"],
                 cnMeaningsTraditional: ["reluctantly"],
                 severity: .important,
@@ -394,7 +406,9 @@ struct FalseFriendBadge: View {
             falseFriend: FalseFriend(
                 id: "ff3",
                 character: "腺",
+                jpReading: "せん (sen)",
                 jpMeanings: ["gland"],
+                cnPinyin: "xiàn",
                 cnMeaningsSimplified: ["gland"],
                 cnMeaningsTraditional: ["gland"],
                 severity: .subtle,

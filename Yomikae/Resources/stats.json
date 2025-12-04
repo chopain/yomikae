@@ -1,0 +1,19 @@
+{
+  "total_characters": 10052,
+  "total_false_friends": 42,
+  "false_friends_by_type": {
+    "type_4_critical": 33,
+    "type_3_partial": 5,
+    "type_1_2_expanded": 4
+  },
+  "false_friends_by_severity": {
+    "critical": 11,
+    "important": 17,
+    "subtle": 14
+  },
+  "sources_used": {
+    "unihan": 0,
+    "jmdict": 44874,
+    "cedict": 185728
+  }
+}

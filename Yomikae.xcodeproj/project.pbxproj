@@ -38,7 +38,8 @@
 		224188242EDF5AA400F16EC8 /* generate_placeholder_icon.sh in Resources */ = {isa = PBXBuildFile; fileRef = 224188222EDF5AA400F16EC8 /* generate_placeholder_icon.sh */; };
 		224188262EDF5BF000F16EC8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 224188252EDF5BF000F16EC8 /* LaunchScreen.storyboard */; };
 		2241884A2EDFBBF600F16EC8 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 224188492EDFBBF600F16EC8 /* GRDB */; };
-		43185ED2E09F491A86063E76 /* characters.json in Resources */ = {isa = PBXBuildFile; fileRef = E4B05705C63F41B08CB9174D /* characters.json */; };
+		2241885F2EE1EAFB00F16EC8 /* stats.json in Resources */ = {isa = PBXBuildFile; fileRef = 2241885E2EE1EAFB00F16EC8 /* stats.json */; };
+		224188612EE1EB0B00F16EC8 /* characters.json in Resources */ = {isa = PBXBuildFile; fileRef = 224188602EE1EB0B00F16EC8 /* characters.json */; };
 		A0000001000000000000001 /* YomikaeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000002000000000000001 /* YomikaeApp.swift */; };
 		A0000003000000000000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000004000000000000001 /* ContentView.swift */; };
 		A0000005000000000000001 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000006000000000000001 /* SearchView.swift */; };
@@ -105,6 +106,8 @@
 		224188442EDFBB9800F16EC8 /* METADATA_SUMMARY.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = METADATA_SUMMARY.md; sourceTree = "<group>"; };
 		224188452EDFBB9800F16EC8 /* ScreenshotGuide.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ScreenshotGuide.md; sourceTree = "<group>"; };
 		224188462EDFBB9800F16EC8 /* TestingGuide.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TestingGuide.md; sourceTree = "<group>"; };
+		2241885E2EE1EAFB00F16EC8 /* stats.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = stats.json; sourceTree = "<group>"; };
+		224188602EE1EB0B00F16EC8 /* characters.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = characters.json; sourceTree = "<group>"; };
 		46E2F57906164195AA4A37F6 /* false_friends.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = false_friends.json; sourceTree = "<group>"; };
 		A0000002000000000000001 /* YomikaeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YomikaeApp.swift; sourceTree = "<group>"; };
 		A0000004000000000000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -119,7 +122,6 @@
 		A0000050000000000000001 /* CharacterRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterRepository.swift; sourceTree = "<group>"; };
 		A0000052000000000000001 /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		A0000054000000000000001 /* FalseFriendRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FalseFriendRepository.swift; sourceTree = "<group>"; };
-		E4B05705C63F41B08CB9174D /* characters.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = characters.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -314,7 +316,8 @@
 		A0000022000000000000001 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				E4B05705C63F41B08CB9174D /* characters.json */,
+				2241885E2EE1EAFB00F16EC8 /* stats.json */,
+				224188602EE1EB0B00F16EC8 /* characters.json */,
 				46E2F57906164195AA4A37F6 /* false_friends.json */,
 				224188122EDDB72800F16EC8 /* false_friends_v2.json */,
 			);
@@ -492,9 +495,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2241885F2EE1EAFB00F16EC8 /* stats.json in Resources */,
 				224188262EDF5BF000F16EC8 /* LaunchScreen.storyboard in Resources */,
-				43185ED2E09F491A86063E76 /* characters.json in Resources */,
 				A36292A4B41A444083137769 /* false_friends.json in Resources */,
+				224188612EE1EB0B00F16EC8 /* characters.json in Resources */,
 				224188242EDF5AA400F16EC8 /* generate_placeholder_icon.sh in Resources */,
 				224188202EDF5A9A00F16EC8 /* LaunchScreenGuide.md in Resources */,
 				224188212EDF5A9A00F16EC8 /* AppIconGuide.md in Resources */,

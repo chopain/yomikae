@@ -221,13 +221,16 @@ enum PreviewData {
     // False friend with full data
     static let falseFriend勉強 = FalseFriend(
         id: "ff_benkyou",
-        characters: "勉強",
-        japaneseMeanings: ["to study", "study", "diligence", "discount"],
-        chineseMeaningsSimplified: ["reluctantly", "to force oneself", "to do with difficulty"],
-        chineseMeaningsTraditional: ["reluctantly", "to force oneself", "to do with difficulty"],
+        character: "勉強",
+        jpReading: "べんきょう (benkyō)",
+        jpMeanings: ["to study", "study", "diligence", "discount"],
+        cnPinyin: "miǎnqiǎng",
+        cnMeaningsSimplified: ["reluctantly", "to force oneself", "to do with difficulty"],
+        cnMeaningsTraditional: ["reluctantly", "to force oneself", "to do with difficulty"],
         severity: .critical,
-        category: .meaningDifference,
+        category: .trueDivergence,
         affectedSystem: .both,
+        explanation: "One of the most critical false friends. In Japanese, 勉強 means 'to study', but in Chinese it means 'reluctantly' or 'to force oneself'. This can lead to very confusing misunderstandings.",
         examples: [
             Example(
                 japanese: "毎日日本語を勉強します。",
@@ -236,19 +239,23 @@ enum PreviewData {
                 translation: "JP: I study Japanese every day. | CN: He reluctantly agreed to this request."
             )
         ],
-        notes: "One of the most critical false friends. In Japanese, 勉強 means 'to study', but in Chinese it means 'reluctantly' or 'to force oneself'. This can lead to very confusing misunderstandings."
+        traditionalNote: nil,
+        mergedFrom: nil
     )
 
     // False friend with multiple examples
     static let falseFriendWithMultipleExamples = FalseFriend(
         id: "ff_dajia",
-        characters: "大家",
-        japaneseMeanings: ["rich family", "master", "expert", "authority"],
-        chineseMeaningsSimplified: ["everyone", "all of us", "we all"],
-        chineseMeaningsTraditional: ["everyone", "all of us", "we all"],
-        severity: .moderate,
-        category: .meaningDifference,
+        character: "大家",
+        jpReading: "たいか (taika)",
+        jpMeanings: ["rich family", "master", "expert", "authority"],
+        cnPinyin: "dàjiā",
+        cnMeaningsSimplified: ["everyone", "all of us", "we all"],
+        cnMeaningsTraditional: ["everyone", "all of us", "we all"],
+        severity: .important,
+        category: .scopeDifference,
         affectedSystem: .both,
+        explanation: "In Japanese, 大家 refers to a master or expert in a particular field. In Chinese, it's commonly used to mean 'everyone' or 'all of us'. This is a moderate-severity false friend because the context usually makes the meaning clear.",
         examples: [
             Example(
                 japanese: "彼は書道の大家です。",
@@ -269,7 +276,8 @@ enum PreviewData {
                 translation: "JP: Consult an authority in this field. | CN: Let's all work hard together!"
             )
         ],
-        notes: "In Japanese, 大家 refers to a master or expert in a particular field. In Chinese, it's commonly used to mean 'everyone' or 'all of us'. This is a moderate-severity false friend because the context usually makes the meaning clear."
+        traditionalNote: nil,
+        mergedFrom: nil
     )
 
     // Search results mock
@@ -284,15 +292,19 @@ enum PreviewData {
         falseFriend勉強,
         FalseFriend(
             id: "ff_niang",
-            characters: "娘",
-            japaneseMeanings: ["daughter", "girl"],
-            chineseMeaningsSimplified: ["mother", "young woman"],
-            chineseMeaningsTraditional: ["mother", "young woman"],
-            severity: .high,
-            category: .meaningDifference,
+            character: "娘",
+            jpReading: "むすめ (musume)",
+            jpMeanings: ["daughter", "girl"],
+            cnPinyin: "niáng",
+            cnMeaningsSimplified: ["mother", "young woman"],
+            cnMeaningsTraditional: ["mother", "young woman"],
+            severity: .critical,
+            category: .simplificationMerge,
             affectedSystem: .both,
+            explanation: "In Japanese, 娘 means 'daughter', but in Chinese it means 'mother'.",
             examples: [],
-            notes: "In Japanese, 娘 means 'daughter', but in Chinese it means 'mother'."
+            traditionalNote: nil,
+            mergedFrom: nil
         ),
         falseFriendWithMultipleExamples
     ]

@@ -82,6 +82,11 @@ struct FalseFriendRow: View {
                         .font(.caption2)
                 }
                 .foregroundColor(.secondary)
+
+                // Reading and pinyin
+                Text("\(jpReadingOnly) · \(falseFriend.cnPinyin)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
 
             Spacer()
@@ -107,6 +112,14 @@ struct FalseFriendRow: View {
 
     private var firstJapaneseMeaning: String {
         falseFriend.jpMeanings.first ?? "—"
+    }
+
+    private var jpReadingOnly: String {
+        // Extract just the hiragana part (before the space/parenthesis with romaji)
+        if let spaceIndex = falseFriend.jpReading.firstIndex(of: " ") {
+            return String(falseFriend.jpReading[..<spaceIndex])
+        }
+        return falseFriend.jpReading
     }
 
     private var firstChineseMeaning: String {
@@ -306,7 +319,9 @@ struct FalseFriendRowCompact: View {
             falseFriend: FalseFriend(
                 id: "ff1",
                 character: "走",
+                jpReading: "はしる (hashiru)",
                 jpMeanings: ["run"],
+                cnPinyin: "zǒu",
                 cnMeaningsSimplified: ["walk", "go"],
                 cnMeaningsTraditional: ["walk", "go"],
                 severity: .critical,
@@ -330,7 +345,9 @@ struct FalseFriendRowCompact: View {
             falseFriend: FalseFriend(
                 id: "ff2",
                 character: "勉",
+                jpReading: "べん (ben)",
                 jpMeanings: ["strive", "endeavor"],
+                cnPinyin: "miǎn",
                 cnMeaningsSimplified: ["reluctantly", "barely"],
                 cnMeaningsTraditional: ["reluctantly"],
                 severity: .important,
@@ -354,7 +371,9 @@ struct FalseFriendRowCompact: View {
             falseFriend: FalseFriend(
                 id: "ff3",
                 character: "后",
+                jpReading: "こう (kō)",
                 jpMeanings: ["empress", "queen"],
+                cnPinyin: "hòu",
                 cnMeaningsSimplified: ["after", "behind"],
                 cnMeaningsTraditional: ["empress"],
                 severity: .important,
@@ -381,7 +400,9 @@ struct FalseFriendRowCompact: View {
                 falseFriend: FalseFriend(
                     id: "ff1",
                     character: "走",
+                    jpReading: "はしる (hashiru)",
                     jpMeanings: ["run"],
+                    cnPinyin: "zǒu",
                     cnMeaningsSimplified: ["walk"],
                     cnMeaningsTraditional: ["walk"],
                     severity: .critical,
@@ -402,7 +423,9 @@ struct FalseFriendRowCompact: View {
                 falseFriend: FalseFriend(
                     id: "ff1",
                     character: "走",
+                    jpReading: "はしる (hashiru)",
                     jpMeanings: ["run"],
+                    cnPinyin: "zǒu",
                     cnMeaningsSimplified: ["walk"],
                     cnMeaningsTraditional: ["walk"],
                     severity: .critical,
@@ -423,7 +446,9 @@ struct FalseFriendRowCompact: View {
                 falseFriend: FalseFriend(
                     id: "ff1",
                     character: "走",
+                    jpReading: "はしる (hashiru)",
                     jpMeanings: ["run"],
+                    cnPinyin: "zǒu",
                     cnMeaningsSimplified: ["walk"],
                     cnMeaningsTraditional: ["walk"],
                     severity: .critical,
@@ -446,7 +471,9 @@ struct FalseFriendRowCompact: View {
             falseFriend: FalseFriend(
                 id: "ff1",
                 character: "走",
+                jpReading: "はしる (hashiru)",
                 jpMeanings: ["run"],
+                cnPinyin: "zǒu",
                 cnMeaningsSimplified: ["walk", "go"],
                 cnMeaningsTraditional: ["walk"],
                 severity: .critical,
@@ -463,7 +490,9 @@ struct FalseFriendRowCompact: View {
             falseFriend: FalseFriend(
                 id: "ff2",
                 character: "勉",
+                jpReading: "べん (ben)",
                 jpMeanings: ["strive", "endeavor"],
+                cnPinyin: "miǎn",
                 cnMeaningsSimplified: ["reluctantly"],
                 cnMeaningsTraditional: ["reluctantly"],
                 severity: .important,
@@ -480,7 +509,9 @@ struct FalseFriendRowCompact: View {
             falseFriend: FalseFriend(
                 id: "ff3",
                 character: "后",
+                jpReading: "こう (kō)",
                 jpMeanings: ["empress"],
+                cnPinyin: "hòu",
                 cnMeaningsSimplified: ["after", "behind"],
                 cnMeaningsTraditional: ["empress"],
                 severity: .important,
@@ -497,7 +528,9 @@ struct FalseFriendRowCompact: View {
             falseFriend: FalseFriend(
                 id: "ff4",
                 character: "腺",
+                jpReading: "せん (sen)",
                 jpMeanings: ["gland"],
+                cnPinyin: "xiàn",
                 cnMeaningsSimplified: ["gland"],
                 cnMeaningsTraditional: ["gland"],
                 severity: .subtle,

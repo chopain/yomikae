@@ -248,7 +248,9 @@ private struct MetadataItem: View {
             falseFriend: FalseFriend(
                 id: "ff_zou",
                 character: "走",
+                jpReading: "はしる (hashiru)",
                 jpMeanings: ["run"],
+                cnPinyin: "zǒu",
                 cnMeaningsSimplified: ["walk", "go"],
                 cnMeaningsTraditional: ["walk", "go"],
                 severity: .critical,
@@ -293,7 +295,9 @@ private struct MetadataItem: View {
             falseFriend: FalseFriend(
                 id: "ff_hou",
                 character: "后",
+                jpReading: "こう (kō)",
                 jpMeanings: ["empress", "queen"],
+                cnPinyin: "hòu",
                 cnMeaningsSimplified: ["after", "behind"],
                 cnMeaningsTraditional: ["empress"],
                 severity: .important,
@@ -393,7 +397,9 @@ private struct MetadataItem: View {
                 falseFriend: FalseFriend(
                     id: "ff_zou",
                     character: "走",
+                    jpReading: "はしる (hashiru)",
                     jpMeanings: ["run"],
+                    cnPinyin: "zǒu",
                     cnMeaningsSimplified: ["walk"],
                     cnMeaningsTraditional: ["walk"],
                     severity: .critical,

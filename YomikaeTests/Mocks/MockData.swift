@@ -78,13 +78,16 @@ enum MockData {
 
     static let falseFriend勉強 = FalseFriend(
         id: "ff_benkyou",
-        characters: "勉強",
-        japaneseMeanings: ["to study", "study", "diligence"],
-        chineseMeaningsSimplified: ["reluctantly", "to force oneself", "to do with difficulty"],
-        chineseMeaningsTraditional: ["reluctantly", "to force oneself", "to do with difficulty"],
+        character: "勉強",
+        jpReading: "べんきょう (benkyō)",
+        jpMeanings: ["to study", "study", "diligence"],
+        cnPinyin: "miǎnqiǎng",
+        cnMeaningsSimplified: ["reluctantly", "to force oneself", "to do with difficulty"],
+        cnMeaningsTraditional: ["reluctantly", "to force oneself", "to do with difficulty"],
         severity: .critical,
-        category: .meaningDifference,
+        category: .trueDivergence,
         affectedSystem: .both,
+        explanation: "One of the most critical false friends. In Japanese, 勉強 means 'to study', but in Chinese it means 'reluctantly' or 'to force oneself'.",
         examples: [
             Example(
                 japanese: "毎日日本語を勉強します。",
@@ -93,18 +96,22 @@ enum MockData {
                 translation: "JP: I study Japanese every day. | CN: He reluctantly agreed to this request."
             )
         ],
-        notes: "One of the most critical false friends. In Japanese, 勉強 means 'to study', but in Chinese it means 'reluctantly' or 'to force oneself'."
+        traditionalNote: nil,
+        mergedFrom: nil
     )
 
     static let falseFriend娘 = FalseFriend(
         id: "ff_niang",
-        characters: "娘",
-        japaneseMeanings: ["daughter", "girl"],
-        chineseMeaningsSimplified: ["mother", "young woman"],
-        chineseMeaningsTraditional: ["mother", "young woman"],
-        severity: .high,
-        category: .meaningDifference,
+        character: "娘",
+        jpReading: "むすめ (musume)",
+        jpMeanings: ["daughter", "girl"],
+        cnPinyin: "niáng",
+        cnMeaningsSimplified: ["mother", "young woman"],
+        cnMeaningsTraditional: ["mother", "young woman"],
+        severity: .critical,
+        category: .simplificationMerge,
         affectedSystem: .both,
+        explanation: "In Japanese, 娘 means 'daughter', but in Chinese it means 'mother'.",
         examples: [
             Example(
                 japanese: "彼の娘は大学生です。",
@@ -113,18 +120,22 @@ enum MockData {
                 translation: "JP: His daughter is a university student. | CN: My mother is not at home today."
             )
         ],
-        notes: "In Japanese, 娘 means 'daughter', but in Chinese it means 'mother'."
+        traditionalNote: nil,
+        mergedFrom: nil
     )
 
     static let falseFriend大家 = FalseFriend(
         id: "ff_dajia",
-        characters: "大家",
-        japaneseMeanings: ["rich family", "master", "expert"],
-        chineseMeaningsSimplified: ["everyone", "all of us"],
-        chineseMeaningsTraditional: ["everyone", "all of us"],
-        severity: .moderate,
-        category: .meaningDifference,
+        character: "大家",
+        jpReading: "たいか (taika)",
+        jpMeanings: ["rich family", "master", "expert"],
+        cnPinyin: "dàjiā",
+        cnMeaningsSimplified: ["everyone", "all of us"],
+        cnMeaningsTraditional: ["everyone", "all of us"],
+        severity: .important,
+        category: .scopeDifference,
         affectedSystem: .both,
+        explanation: "In Japanese, 大家 means 'master/expert', but in Chinese it's commonly used to mean 'everyone'.",
         examples: [
             Example(
                 japanese: "彼は書道の大家です。",
@@ -133,18 +144,22 @@ enum MockData {
                 translation: "JP: He is a master of calligraphy. | CN: Hello everyone!"
             )
         ],
-        notes: "In Japanese, 大家 means 'master/expert', but in Chinese it's commonly used to mean 'everyone'."
+        traditionalNote: nil,
+        mergedFrom: nil
     )
 
     static let falseFriend手紙 = FalseFriend(
         id: "ff_shouzhi",
-        characters: "手紙",
-        japaneseMeanings: ["letter", "mail"],
-        chineseMeaningsSimplified: ["toilet paper"],
-        chineseMeaningsTraditional: ["toilet paper"],
-        severity: .low,
-        category: .meaningDifference,
+        character: "手紙",
+        jpReading: "てがみ (tegami)",
+        jpMeanings: ["letter", "mail"],
+        cnPinyin: "shǒuzhǐ",
+        cnMeaningsSimplified: ["toilet paper"],
+        cnMeaningsTraditional: ["toilet paper"],
+        severity: .critical,
+        category: .trueDivergence,
         affectedSystem: .both,
+        explanation: "A humorous false friend. In Japanese, 手紙 means 'letter', but in Chinese it means 'toilet paper'.",
         examples: [
             Example(
                 japanese: "友達に手紙を書きました。",
@@ -153,7 +168,8 @@ enum MockData {
                 translation: "JP: I wrote a letter to my friend. | CN: Please pass me the toilet paper."
             )
         ],
-        notes: "A humorous false friend. In Japanese, 手紙 means 'letter', but in Chinese it means 'toilet paper'."
+        traditionalNote: nil,
+        mergedFrom: nil
     )
 
     static let allFalseFriends: [FalseFriend] = [

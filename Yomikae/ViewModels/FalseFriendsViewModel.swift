@@ -178,7 +178,9 @@ extension FalseFriendsViewModel {
             FalseFriend(
                 id: "ff1",
                 character: "走",
+                jpReading: "はしる (hashiru)",
                 jpMeanings: ["run"],
+                cnPinyin: "zǒu",
                 cnMeaningsSimplified: ["walk", "go"],
                 cnMeaningsTraditional: ["walk", "go"],
                 severity: .critical,
@@ -192,7 +194,9 @@ extension FalseFriendsViewModel {
             FalseFriend(
                 id: "ff2",
                 character: "勉",
+                jpReading: "べん (ben)",
                 jpMeanings: ["strive", "endeavor"],
+                cnPinyin: "miǎn",
                 cnMeaningsSimplified: ["reluctantly", "barely"],
                 cnMeaningsTraditional: ["reluctantly", "barely"],
                 severity: .important,
@@ -206,7 +210,9 @@ extension FalseFriendsViewModel {
             FalseFriend(
                 id: "ff3",
                 character: "后",
+                jpReading: "こう (kō)",
                 jpMeanings: ["empress", "queen"],
+                cnPinyin: "hòu",
                 cnMeaningsSimplified: ["after", "behind"],
                 cnMeaningsTraditional: ["empress"],
                 severity: .important,
@@ -220,7 +226,9 @@ extension FalseFriendsViewModel {
             FalseFriend(
                 id: "ff4",
                 character: "腺",
+                jpReading: "せん (sen)",
                 jpMeanings: ["gland"],
+                cnPinyin: "xiàn",
                 cnMeaningsSimplified: ["gland"],
                 cnMeaningsTraditional: ["gland"],
                 severity: .subtle,

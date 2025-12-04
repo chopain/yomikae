@@ -5,7 +5,9 @@ import GRDB
 struct FalseFriend: Codable, Identifiable, Hashable {
     let id: String
     let character: String
+    let jpReading: String
     let jpMeanings: [String]
+    let cnPinyin: String
     let cnMeaningsSimplified: [String]
     let cnMeaningsTraditional: [String]
     let severity: Severity
@@ -19,7 +21,9 @@ struct FalseFriend: Codable, Identifiable, Hashable {
     enum CodingKeys: String, CodingKey {
         case id
         case character
+        case jpReading = "jp_reading"
         case jpMeanings = "jp_meanings"
+        case cnPinyin = "cn_pinyin"
         case cnMeaningsSimplified = "cn_meanings_simplified"
         case cnMeaningsTraditional = "cn_meanings_traditional"
         case severity

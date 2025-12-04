@@ -56,7 +56,9 @@ class DatabaseManager {
             try db.create(table: "false_friends", ifNotExists: true) { t in
                 t.column("id", .text).primaryKey()
                 t.column("character", .text).notNull()
+                t.column("jp_reading", .text).notNull()
                 t.column("jp_meanings_json", .text).notNull()
+                t.column("cn_pinyin", .text).notNull()
                 t.column("cn_meanings_simplified_json", .text).notNull()
                 t.column("cn_meanings_traditional_json", .text).notNull()
                 t.column("severity", .text).notNull()
@@ -241,14 +243,16 @@ class DatabaseManager {
         try db.execute(
             sql: """
                 INSERT OR REPLACE INTO false_friends
-                (id, character, jp_meanings_json, cn_meanings_simplified_json, cn_meanings_traditional_json,
+                (id, character, jp_reading, jp_meanings_json, cn_pinyin, cn_meanings_simplified_json, cn_meanings_traditional_json,
                  severity, category, affected_system, explanation, examples_json, traditional_note, merged_from_json)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
             arguments: [
                 falseFriend.id,
                 falseFriend.character,
+                falseFriend.jpReading,
                 jpMeaningsJSON,
+                falseFriend.cnPinyin,
                 cnMeaningsSimplifiedJSON,
                 cnMeaningsTraditionalJSON,
                 falseFriend.severity.rawValue,
@@ -267,14 +271,20 @@ class DatabaseManager {
     func searchCharacters(query: String, limit: Int = 100) -> [Character] {
         do {
             return try dbQueue.read { db in
+                // Search character, radical, and within JSON blobs (meanings, readings, pinyin)
                 let sql = """
                     SELECT * FROM characters
-                    WHERE character LIKE ? OR radical LIKE ?
-                    ORDER BY frequency_rank ASC NULLS LAST
+                    WHERE character LIKE ?
+                       OR radical LIKE ?
+                       OR japanese_json LIKE ?
+                       OR chinese_json LIKE ?
+                    ORDER BY
+                        CASE WHEN character = ? THEN 0 ELSE 1 END,
+                        frequency_rank ASC NULLS LAST
                     LIMIT ?
                     """
                 let pattern = "%\(query)%"
-                let rows = try Row.fetchAll(db, sql: sql, arguments: [pattern, pattern, limit])
+                let rows = try Row.fetchAll(db, sql: sql, arguments: [pattern, pattern, pattern, pattern, query, limit])
                 return try rows.map { try parseCharacter(from: $0) }
             }
         } catch {
@@ -474,7 +484,9 @@ class DatabaseManager {
         return FalseFriend(
             id: row["id"],
             character: row["character"],
+            jpReading: row["jp_reading"],
             jpMeanings: jpMeanings,
+            cnPinyin: row["cn_pinyin"],
             cnMeaningsSimplified: cnMeaningsSimplified,
             cnMeaningsTraditional: cnMeaningsTraditional,
             severity: severity,

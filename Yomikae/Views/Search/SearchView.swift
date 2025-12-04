@@ -26,6 +26,14 @@ struct SearchView: View {
                             .foregroundColor(.red)
                     }
                 }
+                ToolbarItem(placement: .keyboard) {
+                    HStack {
+                        Spacer()
+                        Button("Done") {
+                            hideKeyboard()
+                        }
+                    }
+                }
             }
             .navigationDestination(for: NavigationDestination.self) { destination in
                 switch destination {
@@ -35,7 +43,14 @@ struct SearchView: View {
                     FalseFriendsView()
                 }
             }
+            .onTapGesture {
+                hideKeyboard()
+            }
         }
+    }
+
+    private func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 
     // MARK: - Content Views

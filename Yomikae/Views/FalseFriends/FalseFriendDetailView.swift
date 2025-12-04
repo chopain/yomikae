@@ -608,7 +608,9 @@ struct FalseFriendDetailView: View {
             falseFriend: FalseFriend(
                 id: "ff1",
                 character: "走",
+                jpReading: "はしる (hashiru)",
                 jpMeanings: ["run", "to run"],
+                cnPinyin: "zǒu",
                 cnMeaningsSimplified: ["walk", "go", "leave"],
                 cnMeaningsTraditional: ["walk", "go", "leave"],
                 severity: .critical,
@@ -636,7 +638,9 @@ struct FalseFriendDetailView: View {
             falseFriend: FalseFriend(
                 id: "ff2",
                 character: "后",
+                jpReading: "こう (kō)",
                 jpMeanings: ["empress", "queen"],
+                cnPinyin: "hòu",
                 cnMeaningsSimplified: ["after", "behind", "back", "later"],
                 cnMeaningsTraditional: ["empress", "queen"],
                 severity: .important,

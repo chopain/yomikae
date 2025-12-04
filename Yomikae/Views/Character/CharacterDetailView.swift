@@ -375,10 +375,18 @@ struct CharacterDetailView: View {
     // MARK: - Data Loading
 
     private func loadFalseFriend() async {
-        guard let falseFriendId = character.falseFriendId else { return }
-
         isLoadingFalseFriend = true
-        falseFriend = await falseFriendRepository.get(id: falseFriendId)
+
+        // First try by falseFriendId if available
+        if let falseFriendId = character.falseFriendId {
+            falseFriend = await falseFriendRepository.get(id: falseFriendId)
+        }
+
+        // If not found by ID, try looking up by character string
+        if falseFriend == nil {
+            falseFriend = await falseFriendRepository.getForCharacter(character.character)
+        }
+
         isLoadingFalseFriend = false
     }
 
