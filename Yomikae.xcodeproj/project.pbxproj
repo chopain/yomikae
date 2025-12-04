@@ -40,6 +40,8 @@
 		2241884A2EDFBBF600F16EC8 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 224188492EDFBBF600F16EC8 /* GRDB */; };
 		2241885F2EE1EAFB00F16EC8 /* stats.json in Resources */ = {isa = PBXBuildFile; fileRef = 2241885E2EE1EAFB00F16EC8 /* stats.json */; };
 		224188612EE1EB0B00F16EC8 /* characters.json in Resources */ = {isa = PBXBuildFile; fileRef = 224188602EE1EB0B00F16EC8 /* characters.json */; };
+		2283A7772EE2248D00632D48 /* FuriganaTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2283A7762EE2248D00632D48 /* FuriganaTextView.swift */; };
+		2283A77A2EE226CA00632D48 /* PinyinTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2283A7792EE226CA00632D48 /* PinyinTextView.swift */; };
 		A0000001000000000000001 /* YomikaeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000002000000000000001 /* YomikaeApp.swift */; };
 		A0000003000000000000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000004000000000000001 /* ContentView.swift */; };
 		A0000005000000000000001 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000006000000000000001 /* SearchView.swift */; };
@@ -108,6 +110,8 @@
 		224188462EDFBB9800F16EC8 /* TestingGuide.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TestingGuide.md; sourceTree = "<group>"; };
 		2241885E2EE1EAFB00F16EC8 /* stats.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = stats.json; sourceTree = "<group>"; };
 		224188602EE1EB0B00F16EC8 /* characters.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = characters.json; sourceTree = "<group>"; };
+		2283A7762EE2248D00632D48 /* FuriganaTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuriganaTextView.swift; sourceTree = "<group>"; };
+		2283A7792EE226CA00632D48 /* PinyinTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinyinTextView.swift; sourceTree = "<group>"; };
 		46E2F57906164195AA4A37F6 /* false_friends.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = false_friends.json; sourceTree = "<group>"; };
 		A0000002000000000000001 /* YomikaeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YomikaeApp.swift; sourceTree = "<group>"; };
 		A0000004000000000000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -373,6 +377,8 @@
 		A0000028000000000000001 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				2283A7792EE226CA00632D48 /* PinyinTextView.swift */,
+				2283A7762EE2248D00632D48 /* FuriganaTextView.swift */,
 				224188092EDB026C00F16EC8 /* EmptyStateView.swift */,
 				2241880A2EDB026C00F16EC8 /* LoadingView.swift */,
 				224187F22EDA0CF400F16EC8 /* FalseFriendBanner.swift */,
@@ -525,6 +531,7 @@
 				224187FD2EDA794A00F16EC8 /* FalseFriendsViewModel.swift in Sources */,
 				A0000003000000000000001 /* ContentView.swift in Sources */,
 				A0000005000000000000001 /* SearchView.swift in Sources */,
+				2283A77A2EE226CA00632D48 /* PinyinTextView.swift in Sources */,
 				224187FF2EDA796500F16EC8 /* FalseFriendDetailView.swift in Sources */,
 				224187DD2EDA080900F16EC8 /* SearchViewModel.swift in Sources */,
 				224188162EDDEF8800F16EC8 /* JSONModels.swift in Sources */,
@@ -534,6 +541,7 @@
 				224187F42EDA0CF400F16EC8 /* FalseFriendBanner.swift in Sources */,
 				2241880B2EDB026C00F16EC8 /* EmptyStateView.swift in Sources */,
 				2241880C2EDB026C00F16EC8 /* LoadingView.swift in Sources */,
+				2283A7772EE2248D00632D48 /* FuriganaTextView.swift in Sources */,
 				224187FB2EDA791F00F16EC8 /* FalseFriendsListView.swift in Sources */,
 				224187F52EDA0CF400F16EC8 /* ReadingSection.swift in Sources */,
 				224188042EDAFFFD00F16EC8 /* OnboardingView.swift in Sources */,

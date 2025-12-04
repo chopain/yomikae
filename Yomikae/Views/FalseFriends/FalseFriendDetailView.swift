@@ -96,8 +96,10 @@ struct FalseFriendDetailView: View {
                     ForEach(Array(mergedFrom.enumerated()), id: \.offset) { index, char in
                         HStack(spacing: 12) {
                             Text(char)
-                                .font(.system(size: 40))
-                                .frame(width: 60, height: 60)
+                                .font(.system(size: mergedCharacterFontSize(for: char)))
+                                .minimumScaleFactor(0.7)
+                                .lineLimit(1)
+                                .frame(minWidth: 60, maxWidth: 100, minHeight: 60)
                                 .background(
                                     RoundedRectangle(cornerRadius: 8)
                                         .fill(Color(.systemGray5))
@@ -145,6 +147,11 @@ struct FalseFriendDetailView: View {
                 .fill(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 2)
         )
+    }
+
+    /// Calculate font size for merged characters based on character count
+    private func mergedCharacterFontSize(for char: String) -> CGFloat {
+        char.count == 1 ? 40 : 28
     }
 
     // MARK: - Japanese Section

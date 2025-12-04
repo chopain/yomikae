@@ -9,11 +9,9 @@ struct SearchResultRow: View {
             ZStack(alignment: .topTrailing) {
                 Text(character.character)
                     .font(.system(size: characterFontSize, weight: .regular))
-                    .minimumScaleFactor(0.5)
+                    .minimumScaleFactor(0.7)
                     .lineLimit(1)
-                    .frame(minWidth: 70, maxWidth: 100)
-                    .frame(height: 70)
-                    .padding(.horizontal, 4)
+                    .frame(width: characterFrameWidth, height: 56)
                     .background(
                         RoundedRectangle(cornerRadius: 12)
                             .fill(Color(.systemGray6))
@@ -88,15 +86,18 @@ struct SearchResultRow: View {
 
     /// Dynamic font size based on character count
     private var characterFontSize: CGFloat {
+        character.character.count == 1 ? 36 : 28
+    }
+
+    /// Frame width based on character count - wider for compounds
+    private var characterFrameWidth: CGFloat {
         let count = character.character.count
         if count == 1 {
-            return 48
+            return 56
         } else if count == 2 {
-            return 36
-        } else if count == 3 {
-            return 28
+            return 72
         } else {
-            return 24
+            return 88
         }
     }
 
