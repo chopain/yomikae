@@ -44,23 +44,29 @@ class FalseFriend:
     category: str  # true_divergence, simplification_merge, etc.
     severity: str  # critical, important, subtle
     affects: str  # both, simplified_only, traditional_only
-    
+
     jp_reading: str
     jp_meanings: List[str]
     jp_example: str = ""
     jp_example_translation: str = ""
-    
+
     cn_pinyin: str = ""
+    cn_characters: str = ""  # Chinese simplified form if different from JP
     cn_meanings_simplified: List[str] = field(default_factory=list)
     cn_meanings_traditional: List[str] = field(default_factory=list)
     cn_example: str = ""
     cn_example_translation: str = ""
-    
+
     explanation: str = ""
     mnemonic_tip: str = ""
     traditional_note: str = ""
     merged_from: List[str] = field(default_factory=list)
-    
+
+    # Structured meanings from JCKV
+    shared_meanings: List[str] = field(default_factory=list)
+    jp_only_meanings: List[str] = field(default_factory=list)
+    cn_only_meanings: List[str] = field(default_factory=list)
+
     # Metadata
     source: str = "auto"  # curated, jckv, auto
     confidence: float = 1.0
@@ -71,91 +77,205 @@ class FalseFriend:
 # JCKV Database Converter
 # =============================================================================
 
+def parse_meaning_text(text: str) -> str:
+    """Clean up meaning text - strip labels and whitespace."""
+    if not text or text == 'nan':
+        return ""
+    # Remove trailing newlines and whitespace
+    return text.strip()
+
+
 def convert_jckv_database(excel_path: str) -> List[FalseFriend]:
     """
-    Convert Matsushita JCKV database to FalseFriend objects.
-    
-    The JCKV database classifies words into:
-    - 同形同義 (S): Same form, same meaning - SKIP
-    - 同形類義 (O1): Same + JP has extra meanings - INCLUDE
-    - 同形類義 (O2): Same + CN has extra meanings - INCLUDE  
-    - 同形類義 (O3): Both have extra unique meanings - INCLUDE
-    - 同形異義 (D): Different meanings - INCLUDE (critical)
-    - 非同形 (N): Not same form - SKIP
+    Convert Matsushita JCKV (日中対照漢字語データベース) v3.0 to FalseFriend objects.
+
+    The JCKV database uses these patterns in the Ver.3.0 意味対応 column:
+    - ＝ (同形同義): Same meaning - SKIP
+    - φ (非同形): No Chinese equivalent - SKIP
+    - ＞ (JP has extra meanings): type 1, severity "important"
+    - ＜ (CN has extra meanings): type 2, severity "important"
+    - ＞＜ (Both have unique meanings): type 3, severity "important"
+    - ≠ (Completely different meanings): type 4, severity "critical"
+
+    Column mapping from JKVC_ver3_0.xlsx:
+    - Col 2: 見出し語彙素 (headword/kanji) → characters (PRIMARY)
+    - Col 3: 標準的(新聞)表記 (standard writing, may be hiragana) → fallback only
+    - Col 5: 標準的読み方（カタカナ）→ jp_reading
+    - Col 8: 中国語表記 → cn_characters (Chinese simplified form)
+    - Col 9: 中国語ピンイン表記 → cn_pinyin
+    - Col 10: Ver.3.0 意味対応 → pattern
+    - Col 13: 日本語と中国語に共通の意味 → shared_meanings
+    - Col 15: 日本語のみに存在する意味 → jp_only_meanings
+    - Col 17: 中国語のみに存在する意味 → cn_only_meanings
     """
     if not HAS_OPENPYXL:
         raise ImportError("openpyxl required: pip install openpyxl")
-    
+
     wb = openpyxl.load_workbook(excel_path, read_only=True)
     ws = wb.active
-    
+
     false_friends = []
-    
-    # Find header row and column indices
-    headers = {}
-    for idx, cell in enumerate(next(ws.iter_rows(min_row=1, max_row=1, values_only=True))):
-        if cell:
-            headers[cell] = idx
-    
-    # Expected columns (adjust based on actual JCKV structure):
-    # 語, 読み, 中国語意味対応パタン, 日本語意味, 中国語意味, etc.
-    
-    print(f"Found columns: {list(headers.keys())}")
-    
-    # Process rows
-    for row_idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+    stats = {'＞': 0, '＜': 0, '＞＜': 0, '≠': 0, 'skipped_same': 0, 'skipped_no_cn': 0, 'hiragana_only': 0}
+
+    # Column indices (0-based) based on actual JCKV structure
+    COL_HEADWORD = 2        # 見出し語彙素 (kanji headword) - USE THIS FIRST
+    COL_STANDARD = 3        # 標準的(新聞)表記 (may be hiragana) - FALLBACK ONLY
+    COL_READING = 5         # 標準的読み方（カタカナ）
+    COL_CN_CHARS = 8        # 中国語表記 (Chinese simplified characters)
+    COL_PINYIN = 9          # 中国語ピンイン表記
+    COL_PATTERN = 10        # Ver.3.0 意味対応
+    COL_SHARED_MEANING = 13 # 日本語と中国語に共通の意味（日本語記述）
+    COL_JP_ONLY = 15        # 日本語のみに存在する意味
+    COL_CN_ONLY = 17        # 中国語のみに存在する意味
+
+    # Pattern mapping
+    PATTERN_MAP = {
+        '＞': {'type': 1, 'severity': 'important', 'category': 'scope_difference'},    # JP has extra
+        '＜': {'type': 2, 'severity': 'important', 'category': 'scope_difference'},    # CN has extra
+        '＞＜': {'type': 3, 'severity': 'important', 'category': 'scope_difference'},  # Both have extra
+        '≠': {'type': 4, 'severity': 'critical', 'category': 'true_divergence'},       # Different
+    }
+
+    # Skip header row
+    rows = list(ws.iter_rows(min_row=2, values_only=True))
+    print(f"Processing {len(rows)} rows from JCKV...")
+
+    entry_num = 0
+    for row_idx, row in enumerate(rows, start=2):
         try:
-            # Extract data (column indices depend on actual JCKV structure)
-            word = row[headers.get('語', 0)] if '語' in headers else row[0]
-            pattern = row[headers.get('中国語意味対応パタン', 2)] if '中国語意味対応パタン' in headers else row[2]
-            
-            if not word or not pattern:
+            # Skip empty rows
+            if not row or len(row) <= COL_PATTERN:
                 continue
-            
-            # Skip non-false-friends
-            if pattern in ['S', '同形同義', 'N', '非同形']:
+
+            pattern = str(row[COL_PATTERN] or '').strip()
+
+            # Skip same meaning (＝) and no Chinese equivalent (φ)
+            if pattern == '＝':
+                stats['skipped_same'] += 1
                 continue
-            
-            # Determine severity and type
-            if pattern in ['D', '同形異義']:
-                severity = 'critical'
-                ff_type = 4
-            elif pattern in ['O1', 'O2', 'O3', '同形類義']:
-                severity = 'important'
-                ff_type = 3 if 'O3' in str(pattern) else (1 if 'O1' in str(pattern) else 2)
-            else:
-                severity = 'subtle'
-                ff_type = 3
-            
-            # Extract meanings if available
-            jp_meaning = row[headers.get('日本語意味', 3)] if '日本語意味' in headers else ""
-            cn_meaning = row[headers.get('中国語意味', 4)] if '中国語意味' in headers else ""
-            
+            if pattern == 'φ':
+                stats['skipped_no_cn'] += 1
+                continue
+
+            # Only process our target patterns
+            if pattern not in PATTERN_MAP:
+                continue
+
+            # Extract data - prioritize kanji headword over standard form
+            headword = str(row[COL_HEADWORD] or '').strip()
+            standard_form = str(row[COL_STANDARD] or '').strip()
+            reading = str(row[COL_READING] or '').strip()
+            cn_chars = str(row[COL_CN_CHARS] or '').strip()
+            pinyin = str(row[COL_PINYIN] or '').strip()
+            shared_meaning_raw = str(row[COL_SHARED_MEANING] or '').strip() if len(row) > COL_SHARED_MEANING else ''
+            jp_only_raw = str(row[COL_JP_ONLY] or '').strip() if len(row) > COL_JP_ONLY else ''
+            cn_only_raw = str(row[COL_CN_ONLY] or '').strip() if len(row) > COL_CN_ONLY else ''
+
+            # IMPORTANT: Use kanji headword first, only fall back to standard form if empty
+            # The standard form (標準的表記) is often hiragana, we want kanji (見出し語彙素)
+            characters = headword if headword and headword != '--' else standard_form
+
+            if not characters or characters == '--':
+                continue
+
+            # Track entries that only have hiragana (for statistics)
+            if not headword or headword == '--':
+                stats['hiragana_only'] += 1
+
+            # Skip if no Chinese equivalent
+            if cn_chars == '--' or not cn_chars:
+                stats['skipped_no_cn'] += 1
+                continue
+
+            # Get pattern info
+            pattern_info = PATTERN_MAP[pattern]
+            entry_num += 1
+            stats[pattern] += 1
+
+            # Clean meaning texts (strip whitespace and 'nan')
+            shared_meaning = parse_meaning_text(shared_meaning_raw)
+            jp_only = parse_meaning_text(jp_only_raw)
+            cn_only = parse_meaning_text(cn_only_raw)
+
+            # Build Japanese meanings list (clean, no prefixes)
+            jp_meanings = []
+            if shared_meaning:
+                jp_meanings.append(shared_meaning)
+            if jp_only:
+                jp_meanings.append(jp_only)
+
+            # Build Chinese meanings list (clean, no prefixes)
+            cn_meanings = []
+            if shared_meaning:
+                cn_meanings.append(shared_meaning)
+            if cn_only:
+                cn_meanings.append(cn_only)
+
+            # Store structured meanings separately
+            shared_meanings_list = [shared_meaning] if shared_meaning else []
+            jp_only_meanings_list = [jp_only] if jp_only else []
+            cn_only_meanings_list = [cn_only] if cn_only else []
+
+            # Build explanation
+            if pattern == '≠':
+                explanation = f"Completely different meanings: JP '{jp_only}' vs CN '{cn_only}'"
+            elif pattern == '＞':
+                explanation = f"Japanese has additional meaning: {jp_only}"
+            elif pattern == '＜':
+                explanation = f"Chinese has additional meaning: {cn_only}"
+            else:  # ＞＜
+                explanation = f"Both languages have unique meanings. JP: {jp_only}; CN: {cn_only}"
+
+            # Convert reading to formatted string
+            jp_reading_formatted = reading if reading and reading != 'nan' else ""
+
+            # Clean up pinyin (remove newlines, etc.)
+            pinyin_clean = pinyin.replace('\n', ' ').strip() if pinyin and pinyin != 'nan' else ""
+
+            # Store Chinese characters (may differ from Japanese due to simplification)
+            cn_characters = cn_chars if cn_chars and cn_chars != '--' and cn_chars != characters else ""
+
             ff = FalseFriend(
-                id=f"jckv_{row_idx:04d}",
-                characters=str(word),
-                type=ff_type,
-                category="true_divergence",  # Default, can be refined
-                severity=severity,
-                affects="both",  # Default, can be refined
-                jp_reading="",  # Need to add from JMDict
-                jp_meanings=[str(jp_meaning)] if jp_meaning else [],
-                cn_pinyin="",  # Need to add from CEDICT
-                cn_meanings_simplified=[str(cn_meaning)] if cn_meaning else [],
-                cn_meanings_traditional=[str(cn_meaning)] if cn_meaning else [],
-                explanation=f"JCKV classification: {pattern}",
+                id=f"jckv_{entry_num:04d}",
+                characters=characters,
+                type=pattern_info['type'],
+                category=pattern_info['category'],
+                severity=pattern_info['severity'],
+                affects="both",
+                jp_reading=jp_reading_formatted,
+                jp_meanings=jp_meanings if jp_meanings else [],
+                cn_pinyin=pinyin_clean,
+                cn_characters=cn_characters,
+                cn_meanings_simplified=cn_meanings if cn_meanings else [],
+                cn_meanings_traditional=cn_meanings if cn_meanings else [],
+                explanation=explanation,
+                shared_meanings=shared_meanings_list,
+                jp_only_meanings=jp_only_meanings_list,
+                cn_only_meanings=cn_only_meanings_list,
                 source="jckv",
                 confidence=0.9,
                 needs_review=True
             )
-            
+
             false_friends.append(ff)
-            
+
         except Exception as e:
             print(f"Error processing row {row_idx}: {e}")
             continue
-    
-    print(f"Extracted {len(false_friends)} false friends from JCKV")
+
+    # Print statistics
+    print(f"\n=== JCKV Extraction Statistics ===")
+    print(f"Total false friends extracted: {len(false_friends)}")
+    print(f"  ≠ (completely different, critical): {stats['≠']}")
+    print(f"  ＞ (JP has extra meanings, important): {stats['＞']}")
+    print(f"  ＜ (CN has extra meanings, important): {stats['＜']}")
+    print(f"  ＞＜ (both have unique, important): {stats['＞＜']}")
+    print(f"Skipped:")
+    print(f"  ＝ (same meaning): {stats['skipped_same']}")
+    print(f"  φ/-- (no Chinese equivalent): {stats['skipped_no_cn']}")
+    print(f"Notes:")
+    print(f"  Entries with hiragana fallback (no kanji headword): {stats['hiragana_only']}")
+
     return false_friends
 
 
@@ -266,9 +386,9 @@ def load_curated_false_friends(json_path: str) -> List[FalseFriend]:
     """Load our curated false friends."""
     with open(json_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
-    
+
     entries = data.get('false_friends', data)  # Handle both formats
-    
+
     false_friends = []
     for entry in entries:
         ff = FalseFriend(
@@ -283,6 +403,7 @@ def load_curated_false_friends(json_path: str) -> List[FalseFriend]:
             jp_example=entry.get('jp_example', ''),
             jp_example_translation=entry.get('jp_example_translation', ''),
             cn_pinyin=entry.get('cn_pinyin', ''),
+            cn_characters=entry.get('cn_characters', ''),
             cn_meanings_simplified=entry.get('cn_meanings_simplified', entry.get('cn_meanings', [])),
             cn_meanings_traditional=entry.get('cn_meanings_traditional', entry.get('cn_meanings', [])),
             cn_example=entry.get('cn_example', ''),
@@ -291,12 +412,15 @@ def load_curated_false_friends(json_path: str) -> List[FalseFriend]:
             mnemonic_tip=entry.get('mnemonic_tip', ''),
             traditional_note=entry.get('traditional_note', ''),
             merged_from=entry.get('merged_from', []),
+            shared_meanings=entry.get('shared_meanings', []),
+            jp_only_meanings=entry.get('jp_only_meanings', []),
+            cn_only_meanings=entry.get('cn_only_meanings', []),
             source='curated',
             confidence=1.0,
             needs_review=False
         )
         false_friends.append(ff)
-    
+
     return false_friends
 
 
@@ -342,7 +466,7 @@ def merge_false_friends(
 
 
 def save_false_friends(false_friends: List[FalseFriend], output_path: str):
-    """Save false friends to JSON."""
+    """Save false friends to JSON in the format expected by the Swift app."""
     # Count statistics
     stats = {
         'total': len(false_friends),
@@ -351,35 +475,49 @@ def save_false_friends(false_friends: List[FalseFriend], output_path: str):
         'by_category': defaultdict(int),
         'needs_review': 0
     }
-    
+
     for ff in false_friends:
         stats['by_severity'][ff.severity] += 1
         stats['by_source'][ff.source] += 1
         stats['by_category'][ff.category] += 1
         if ff.needs_review:
             stats['needs_review'] += 1
-    
+
+    # Categories dict expected by Swift FalseFriendsMetadata
+    categories = {
+        "true_divergence": "Meanings evolved differently over centuries in both languages",
+        "simplification_merge": "Confusion exists because Simplified Chinese merged distinct Traditional characters",
+        "japanese_coinage": "Word invented/repurposed in Meiji-era Japan, borrowed back to China",
+        "scope_difference": "Same core meaning but different range of usage"
+    }
+
+    # Convert FalseFriend objects to dicts, excluding metadata fields not in Swift model
+    def to_swift_dict(ff: FalseFriend) -> dict:
+        d = asdict(ff)
+        # Remove fields not in the Swift FalseFriend model
+        d.pop('source', None)
+        d.pop('confidence', None)
+        d.pop('needs_review', None)
+        return d
+
     output = {
         'metadata': {
             'version': '3.0',
             'description': 'Expanded false friends database',
             'total_entries': len(false_friends),
-            'statistics': {
-                'by_severity': dict(stats['by_severity']),
-                'by_source': dict(stats['by_source']),
-                'by_category': dict(stats['by_category']),
-                'needs_review': stats['needs_review']
-            }
+            'categories': categories
         },
-        'false_friends': [asdict(ff) for ff in false_friends]
+        'false_friends': [to_swift_dict(ff) for ff in false_friends]
     }
-    
+
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
-    
+
     print(f"Saved {len(false_friends)} entries to {output_path}")
     print(f"Statistics: {dict(stats['by_severity'])}")
-    print(f"Needs review: {stats['needs_review']}")
+    print(f"  By category: {dict(stats['by_category'])}")
+    print(f"  By source: {dict(stats['by_source'])}")
+    print(f"  Needs review: {stats['needs_review']}")
 
 
 # =============================================================================
