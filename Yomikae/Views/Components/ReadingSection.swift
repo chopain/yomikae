@@ -5,10 +5,19 @@ struct ReadingSection: View {
     let language: String
     let readings: [(label: String, value: String)]
     let meanings: [String]
+    var speakText: String? = nil
+    var onSpeak: (() -> Void)? = nil
+    var speakingLanguage: SpeakingLanguage = .none
+
+    @ObservedObject private var speechService = SpeechService.shared
+
+    private var isThisSectionSpeaking: Bool {
+        speechService.isSpeaking && speechService.speakingLanguage == speakingLanguage
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            // Header with flag and language
+            // Header with flag, language, and speaker button
             HStack(spacing: 8) {
                 Text(flag)
                     .font(.title2)
@@ -17,6 +26,18 @@ struct ReadingSection: View {
                     .font(.title3)
                     .fontWeight(.semibold)
                     .foregroundColor(.primary)
+
+                Spacer()
+
+                if let onSpeak = onSpeak {
+                    Button(action: onSpeak) {
+                        Image(systemName: isThisSectionSpeaking ? "speaker.wave.2.fill" : "speaker.wave.2")
+                            .font(.title3)
+                            .foregroundColor(.accentColor)
+                            .symbolEffect(.variableColor.iterative, isActive: isThisSectionSpeaking)
+                    }
+                    .buttonStyle(.plain)
+                }
             }
 
             VStack(alignment: .leading, spacing: 12) {

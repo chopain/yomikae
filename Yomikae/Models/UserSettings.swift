@@ -8,8 +8,34 @@ class UserSettings: ObservableObject {
     @AppStorage("hasCompletedOnboarding") var hasCompletedOnboarding: Bool = false
     @AppStorage("fontSize") var fontSize: FontSize = .medium
     @AppStorage("recentItemsCount") var recentItemsCount: Int = 10
+    @AppStorage("speechRate") var speechRate: SpeechRate = .normal
 
     private init() {}
+}
+
+// MARK: - Speech Rate
+
+enum SpeechRate: String, CaseIterable {
+    case slow = "slow"
+    case normal = "normal"
+    case fast = "fast"
+
+    var displayName: String {
+        switch self {
+        case .slow: return "Slow"
+        case .normal: return "Normal"
+        case .fast: return "Fast"
+        }
+    }
+
+    /// Returns the AVSpeechUtterance rate value
+    var rate: Float {
+        switch self {
+        case .slow: return 0.35
+        case .normal: return 0.5
+        case .fast: return 0.6
+        }
+    }
 }
 
 // MARK: - Font Size

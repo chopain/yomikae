@@ -100,6 +100,31 @@ struct SettingsView: View {
                         .font(.caption)
                 }
 
+                // MARK: - Speech
+
+                Section {
+                    Picker("Speech Rate", selection: $settings.speechRate) {
+                        ForEach(SpeechRate.allCases, id: \.self) { rate in
+                            Text(rate.displayName).tag(rate)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+
+                    Button {
+                        SpeechService.shared.speakJapanese("漢字")
+                    } label: {
+                        HStack {
+                            Image(systemName: "speaker.wave.2")
+                            Text("Test Speech")
+                        }
+                    }
+                } header: {
+                    Text("Speech")
+                } footer: {
+                    Text("Adjust the speed of text-to-speech pronunciation")
+                        .font(.caption)
+                }
+
                 // MARK: - History
 
                 Section {

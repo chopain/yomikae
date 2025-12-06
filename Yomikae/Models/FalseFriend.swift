@@ -8,6 +8,7 @@ struct FalseFriend: Codable, Identifiable, Hashable {
     let jpReading: String
     let jpMeanings: [String]
     let cnPinyin: String
+    let cnCharacters: String?  // Chinese simplified form if different from JP
     let cnMeaningsSimplified: [String]
     let cnMeaningsTraditional: [String]
     let severity: Severity
@@ -17,6 +18,10 @@ struct FalseFriend: Codable, Identifiable, Hashable {
     let examples: [Example]
     let traditionalNote: String?
     let mergedFrom: [String]?
+    // Structured meanings from JCKV
+    let sharedMeanings: [String]?
+    let jpOnlyMeanings: [String]?
+    let cnOnlyMeanings: [String]?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -24,6 +29,7 @@ struct FalseFriend: Codable, Identifiable, Hashable {
         case jpReading = "jp_reading"
         case jpMeanings = "jp_meanings"
         case cnPinyin = "cn_pinyin"
+        case cnCharacters = "cn_characters"
         case cnMeaningsSimplified = "cn_meanings_simplified"
         case cnMeaningsTraditional = "cn_meanings_traditional"
         case severity
@@ -33,6 +39,50 @@ struct FalseFriend: Codable, Identifiable, Hashable {
         case examples
         case traditionalNote = "traditional_note"
         case mergedFrom = "merged_from"
+        case sharedMeanings = "shared_meanings"
+        case jpOnlyMeanings = "jp_only_meanings"
+        case cnOnlyMeanings = "cn_only_meanings"
+    }
+
+    // Custom initializer with defaults for new optional fields
+    init(
+        id: String,
+        character: String,
+        jpReading: String,
+        jpMeanings: [String],
+        cnPinyin: String,
+        cnCharacters: String? = nil,
+        cnMeaningsSimplified: [String],
+        cnMeaningsTraditional: [String],
+        severity: Severity,
+        category: Category,
+        affectedSystem: AffectedSystem,
+        explanation: String,
+        examples: [Example],
+        traditionalNote: String?,
+        mergedFrom: [String]?,
+        sharedMeanings: [String]? = nil,
+        jpOnlyMeanings: [String]? = nil,
+        cnOnlyMeanings: [String]? = nil
+    ) {
+        self.id = id
+        self.character = character
+        self.jpReading = jpReading
+        self.jpMeanings = jpMeanings
+        self.cnPinyin = cnPinyin
+        self.cnCharacters = cnCharacters
+        self.cnMeaningsSimplified = cnMeaningsSimplified
+        self.cnMeaningsTraditional = cnMeaningsTraditional
+        self.severity = severity
+        self.category = category
+        self.affectedSystem = affectedSystem
+        self.explanation = explanation
+        self.examples = examples
+        self.traditionalNote = traditionalNote
+        self.mergedFrom = mergedFrom
+        self.sharedMeanings = sharedMeanings
+        self.jpOnlyMeanings = jpOnlyMeanings
+        self.cnOnlyMeanings = cnOnlyMeanings
     }
 
     // Helper method to check if this false friend is relevant for a given Chinese system

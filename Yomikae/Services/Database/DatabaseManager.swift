@@ -59,6 +59,7 @@ class DatabaseManager {
                 t.column("jp_reading", .text).notNull()
                 t.column("jp_meanings_json", .text).notNull()
                 t.column("cn_pinyin", .text).notNull()
+                t.column("cn_characters", .text)  // Chinese simplified form if different from JP
                 t.column("cn_meanings_simplified_json", .text).notNull()
                 t.column("cn_meanings_traditional_json", .text).notNull()
                 t.column("severity", .text).notNull()
@@ -68,6 +69,10 @@ class DatabaseManager {
                 t.column("examples_json", .text).notNull()
                 t.column("traditional_note", .text)
                 t.column("merged_from_json", .text)
+                // Structured meanings from JCKV
+                t.column("shared_meanings_json", .text)
+                t.column("jp_only_meanings_json", .text)
+                t.column("cn_only_meanings_json", .text)
             }
 
             // Create indexes
@@ -93,7 +98,7 @@ class DatabaseManager {
 
     // MARK: - Database Migrations
 
-    private let currentSchemaVersion = 1
+    private let currentSchemaVersion = 2
 
     private func runMigrations(in db: Database) throws {
         let currentVersion = try getDatabaseVersion(in: db)
@@ -138,6 +143,26 @@ class DatabaseManager {
         switch version {
         case 1:
             // Version 1 is the initial schema - no migration needed
+            break
+
+        case 2:
+            // Version 2: Add cn_characters and structured meanings to false_friends
+            // Use IF NOT EXISTS pattern via checking column existence first
+            let columns = try Row.fetchAll(db, sql: "PRAGMA table_info(false_friends)")
+            let columnNames = Set(columns.map { $0["name"] as String })
+
+            if !columnNames.contains("cn_characters") {
+                try db.execute(sql: "ALTER TABLE false_friends ADD COLUMN cn_characters TEXT")
+            }
+            if !columnNames.contains("shared_meanings_json") {
+                try db.execute(sql: "ALTER TABLE false_friends ADD COLUMN shared_meanings_json TEXT")
+            }
+            if !columnNames.contains("jp_only_meanings_json") {
+                try db.execute(sql: "ALTER TABLE false_friends ADD COLUMN jp_only_meanings_json TEXT")
+            }
+            if !columnNames.contains("cn_only_meanings_json") {
+                try db.execute(sql: "ALTER TABLE false_friends ADD COLUMN cn_only_meanings_json TEXT")
+            }
             break
 
         // Future migrations go here
@@ -191,7 +216,7 @@ class DatabaseManager {
         do {
             print("📥 Importing false friends from JSON...")
             // Use v2 format by default
-            let falseFriends = try JSONImportService.importFalseFriends(from: "false_friends_v2")
+            let falseFriends = try JSONImportService.importFalseFriends(from: "false_friends_merged")
 
             try dbQueue.write { db in
                 for falseFriend in falseFriends {
@@ -239,13 +264,17 @@ class DatabaseManager {
         let cnMeaningsTraditionalJSON = try encodeToJSON(falseFriend.cnMeaningsTraditional)
         let examplesJSON = try encodeToJSON(falseFriend.examples)
         let mergedFromJSON = try falseFriend.mergedFrom.map { try encodeToJSON($0) }
+        let sharedMeaningsJSON = try falseFriend.sharedMeanings.map { try encodeToJSON($0) }
+        let jpOnlyMeaningsJSON = try falseFriend.jpOnlyMeanings.map { try encodeToJSON($0) }
+        let cnOnlyMeaningsJSON = try falseFriend.cnOnlyMeanings.map { try encodeToJSON($0) }
 
         try db.execute(
             sql: """
                 INSERT OR REPLACE INTO false_friends
-                (id, character, jp_reading, jp_meanings_json, cn_pinyin, cn_meanings_simplified_json, cn_meanings_traditional_json,
-                 severity, category, affected_system, explanation, examples_json, traditional_note, merged_from_json)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (id, character, jp_reading, jp_meanings_json, cn_pinyin, cn_characters, cn_meanings_simplified_json, cn_meanings_traditional_json,
+                 severity, category, affected_system, explanation, examples_json, traditional_note, merged_from_json,
+                 shared_meanings_json, jp_only_meanings_json, cn_only_meanings_json)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
             arguments: [
                 falseFriend.id,
@@ -253,6 +282,7 @@ class DatabaseManager {
                 falseFriend.jpReading,
                 jpMeaningsJSON,
                 falseFriend.cnPinyin,
+                falseFriend.cnCharacters,
                 cnMeaningsSimplifiedJSON,
                 cnMeaningsTraditionalJSON,
                 falseFriend.severity.rawValue,
@@ -261,7 +291,10 @@ class DatabaseManager {
                 falseFriend.explanation,
                 examplesJSON,
                 falseFriend.traditionalNote,
-                mergedFromJSON
+                mergedFromJSON,
+                sharedMeaningsJSON,
+                jpOnlyMeaningsJSON,
+                cnOnlyMeaningsJSON
             ]
         )
     }
@@ -464,12 +497,18 @@ class DatabaseManager {
         let cnMeaningsTraditionalJSON: String = row["cn_meanings_traditional_json"]
         let examplesJSON: String = row["examples_json"]
         let mergedFromJSON: String? = row["merged_from_json"]
+        let sharedMeaningsJSON: String? = row["shared_meanings_json"]
+        let jpOnlyMeaningsJSON: String? = row["jp_only_meanings_json"]
+        let cnOnlyMeaningsJSON: String? = row["cn_only_meanings_json"]
 
         let jpMeanings = try decodeFromJSON(jpMeaningsJSON, as: [String].self) ?? []
         let cnMeaningsSimplified = try decodeFromJSON(cnMeaningsSimplifiedJSON, as: [String].self) ?? []
         let cnMeaningsTraditional = try decodeFromJSON(cnMeaningsTraditionalJSON, as: [String].self) ?? []
         let examples = try decodeFromJSON(examplesJSON, as: [Example].self) ?? []
         let mergedFrom = try decodeFromJSON(mergedFromJSON, as: [String].self)
+        let sharedMeanings = try decodeFromJSON(sharedMeaningsJSON, as: [String].self)
+        let jpOnlyMeanings = try decodeFromJSON(jpOnlyMeaningsJSON, as: [String].self)
+        let cnOnlyMeanings = try decodeFromJSON(cnOnlyMeaningsJSON, as: [String].self)
 
         let severityString: String = row["severity"]
         let categoryString: String = row["category"]
@@ -487,6 +526,7 @@ class DatabaseManager {
             jpReading: row["jp_reading"],
             jpMeanings: jpMeanings,
             cnPinyin: row["cn_pinyin"],
+            cnCharacters: row["cn_characters"],
             cnMeaningsSimplified: cnMeaningsSimplified,
             cnMeaningsTraditional: cnMeaningsTraditional,
             severity: severity,
@@ -495,7 +535,10 @@ class DatabaseManager {
             explanation: row["explanation"],
             examples: examples,
             traditionalNote: row["traditional_note"],
-            mergedFrom: mergedFrom
+            mergedFrom: mergedFrom,
+            sharedMeanings: sharedMeanings,
+            jpOnlyMeanings: jpOnlyMeanings,
+            cnOnlyMeanings: cnOnlyMeanings
         )
     }
 }

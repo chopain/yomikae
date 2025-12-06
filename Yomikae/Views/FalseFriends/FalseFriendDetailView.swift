@@ -166,6 +166,12 @@ struct FalseFriendDetailView: View {
                 Text("Japanese")
                     .font(.title3)
                     .fontWeight(.bold)
+
+                Spacer()
+
+                SpeakerButton(forLanguage: .japanese) {
+                    SpeechService.shared.speakJapanese(falseFriend.character)
+                }
             }
 
             // Meanings
@@ -199,7 +205,11 @@ struct FalseFriendDetailView: View {
                     title: "Example in Japanese",
                     text: example.japanese,
                     translation: example.translation,
-                    color: .blue
+                    color: .blue,
+                    forLanguage: .japanese,
+                    onSpeak: {
+                        SpeechService.shared.speakJapanese(example.japanese)
+                    }
                 )
             }
         }
@@ -223,6 +233,15 @@ struct FalseFriendDetailView: View {
                 Text("Chinese")
                     .font(.title3)
                     .fontWeight(.bold)
+
+                Spacer()
+
+                SpeakerButton(forLanguage: .chinese) {
+                    let isTraditional = settings.chineseSystem == .traditional
+                    // Use cn_characters if available (simplified form), otherwise use main character
+                    let textToSpeak = falseFriend.cnCharacters ?? falseFriend.character
+                    SpeechService.shared.speakChinese(textToSpeak, traditional: isTraditional)
+                }
             }
 
             // Simplified Meanings
@@ -334,7 +353,13 @@ struct FalseFriendDetailView: View {
                     title: "Example in Chinese",
                     text: example.chineseSimplified,
                     translation: example.translation,
-                    color: .red
+                    color: .red,
+                    forLanguage: .chinese,
+                    onSpeak: {
+                        let isTraditional = settings.chineseSystem == .traditional
+                        let text = isTraditional ? example.chineseTraditional : example.chineseSimplified
+                        SpeechService.shared.speakChinese(text, traditional: isTraditional)
+                    }
                 )
             }
         }
@@ -526,12 +551,20 @@ struct FalseFriendDetailView: View {
 
     // MARK: - Helper Views
 
-    private func exampleCard(title: String, text: String, translation: String, color: Color) -> some View {
+    private func exampleCard(title: String, text: String, translation: String, color: Color, forLanguage: SpeakingLanguage = .none, onSpeak: (() -> Void)? = nil) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.caption)
-                .fontWeight(.semibold)
-                .foregroundColor(.secondary)
+            HStack {
+                Text(title)
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.secondary)
+
+                Spacer()
+
+                if let onSpeak = onSpeak, !text.isEmpty {
+                    SpeakerButton(forLanguage: forLanguage, action: onSpeak)
+                }
+            }
 
             Text(text)
                 .font(.body)

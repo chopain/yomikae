@@ -33,7 +33,11 @@ struct CharacterCard: View {
                     flag: "🇯🇵",
                     language: "Japanese",
                     readings: buildJapaneseReadings(japanese),
-                    meanings: japanese.meanings
+                    meanings: japanese.meanings,
+                    onSpeak: {
+                        SpeechService.shared.speakJapanese(character.character)
+                    },
+                    speakingLanguage: .japanese
                 )
             }
 
@@ -45,7 +49,12 @@ struct CharacterCard: View {
                     flag: "🇨🇳",
                     language: "Chinese",
                     readings: buildChineseReadings(chinese),
-                    meanings: buildChineseMeanings(chinese)
+                    meanings: buildChineseMeanings(chinese),
+                    onSpeak: {
+                        let isTraditional = UserSettings.shared.chineseSystem == .traditional
+                        SpeechService.shared.speakChinese(character.character, traditional: isTraditional)
+                    },
+                    speakingLanguage: .chinese
                 )
             }
 

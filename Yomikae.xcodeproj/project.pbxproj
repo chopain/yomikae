@@ -42,6 +42,10 @@
 		224188612EE1EB0B00F16EC8 /* characters.json in Resources */ = {isa = PBXBuildFile; fileRef = 224188602EE1EB0B00F16EC8 /* characters.json */; };
 		2283A7772EE2248D00632D48 /* FuriganaTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2283A7762EE2248D00632D48 /* FuriganaTextView.swift */; };
 		2283A77A2EE226CA00632D48 /* PinyinTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2283A7792EE226CA00632D48 /* PinyinTextView.swift */; };
+		2283A77C2EE2914500632D48 /* false_friends_merged.json in Resources */ = {isa = PBXBuildFile; fileRef = 2283A77B2EE2914500632D48 /* false_friends_merged.json */; };
+		2283A77E2EE2E11A00632D48 /* ReadingSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2283A77D2EE2E11A00632D48 /* ReadingSection.swift */; };
+		2283A7802EE2E12600632D48 /* SpeakerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2283A77F2EE2E12600632D48 /* SpeakerButton.swift */; };
+		2283A7822EE2E3F700632D48 /* SpeechService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2283A7812EE2E3F700632D48 /* SpeechService.swift */; };
 		A0000001000000000000001 /* YomikaeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000002000000000000001 /* YomikaeApp.swift */; };
 		A0000003000000000000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000004000000000000001 /* ContentView.swift */; };
 		A0000005000000000000001 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000006000000000000001 /* SearchView.swift */; };
@@ -112,6 +116,10 @@
 		224188602EE1EB0B00F16EC8 /* characters.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = characters.json; sourceTree = "<group>"; };
 		2283A7762EE2248D00632D48 /* FuriganaTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuriganaTextView.swift; sourceTree = "<group>"; };
 		2283A7792EE226CA00632D48 /* PinyinTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinyinTextView.swift; sourceTree = "<group>"; };
+		2283A77B2EE2914500632D48 /* false_friends_merged.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = false_friends_merged.json; sourceTree = "<group>"; };
+		2283A77D2EE2E11A00632D48 /* ReadingSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingSection.swift; sourceTree = "<group>"; };
+		2283A77F2EE2E12600632D48 /* SpeakerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakerButton.swift; sourceTree = "<group>"; };
+		2283A7812EE2E3F700632D48 /* SpeechService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechService.swift; sourceTree = "<group>"; };
 		46E2F57906164195AA4A37F6 /* false_friends.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = false_friends.json; sourceTree = "<group>"; };
 		A0000002000000000000001 /* YomikaeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YomikaeApp.swift; sourceTree = "<group>"; };
 		A0000004000000000000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -311,6 +319,7 @@
 		A0000021000000000000001 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				2283A7812EE2E3F700632D48 /* SpeechService.swift */,
 				2241880D2EDB03E300F16EC8 /* HistoryService.swift */,
 				A0000029000000000000001 /* Database */,
 			);
@@ -320,6 +329,7 @@
 		A0000022000000000000001 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				2283A77B2EE2914500632D48 /* false_friends_merged.json */,
 				2241885E2EE1EAFB00F16EC8 /* stats.json */,
 				224188602EE1EB0B00F16EC8 /* characters.json */,
 				46E2F57906164195AA4A37F6 /* false_friends.json */,
@@ -377,6 +387,8 @@
 		A0000028000000000000001 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				2283A77D2EE2E11A00632D48 /* ReadingSection.swift */,
+				2283A77F2EE2E12600632D48 /* SpeakerButton.swift */,
 				2283A7792EE226CA00632D48 /* PinyinTextView.swift */,
 				2283A7762EE2248D00632D48 /* FuriganaTextView.swift */,
 				224188092EDB026C00F16EC8 /* EmptyStateView.swift */,
@@ -502,6 +514,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2241885F2EE1EAFB00F16EC8 /* stats.json in Resources */,
+				2283A77C2EE2914500632D48 /* false_friends_merged.json in Resources */,
 				224188262EDF5BF000F16EC8 /* LaunchScreen.storyboard in Resources */,
 				A36292A4B41A444083137769 /* false_friends.json in Resources */,
 				224188612EE1EB0B00F16EC8 /* characters.json in Resources */,
@@ -535,9 +548,11 @@
 				224187FF2EDA796500F16EC8 /* FalseFriendDetailView.swift in Sources */,
 				224187DD2EDA080900F16EC8 /* SearchViewModel.swift in Sources */,
 				224188162EDDEF8800F16EC8 /* JSONModels.swift in Sources */,
+				2283A7822EE2E3F700632D48 /* SpeechService.swift in Sources */,
 				224187F72EDA0D8500F16EC8 /* CharacterDetailView.swift in Sources */,
 				A0000007000000000000001 /* FalseFriendsView.swift in Sources */,
 				A0000043000000000000001 /* DatabaseService.swift in Sources */,
+				2283A77E2EE2E11A00632D48 /* ReadingSection.swift in Sources */,
 				224187F42EDA0CF400F16EC8 /* FalseFriendBanner.swift in Sources */,
 				2241880B2EDB026C00F16EC8 /* EmptyStateView.swift in Sources */,
 				2241880C2EDB026C00F16EC8 /* LoadingView.swift in Sources */,
@@ -554,6 +569,7 @@
 				224187F12EDA0CDB00F16EC8 /* CharacterCard.swift in Sources */,
 				224187E72EDA08CF00F16EC8 /* FalseFriend.swift in Sources */,
 				224187DF2EDA08AE00F16EC8 /* SearchResultRow.swift in Sources */,
+				2283A7802EE2E12600632D48 /* SpeakerButton.swift in Sources */,
 				A0000045000000000000001 /* TestRecord.swift in Sources */,
 				224188192EDF588E00F16EC8 /* AppIconPreview.swift in Sources */,
 				224187F92EDA784000F16EC8 /* FalseFriendRow.swift in Sources */,

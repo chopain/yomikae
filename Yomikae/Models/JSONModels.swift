@@ -40,15 +40,20 @@ struct FalseFriendJSONV2: Codable {
     let mergedFrom: [String]?
     let jpReading: String
     let jpMeanings: [String]
-    let jpExample: String
-    let jpExampleTranslation: String
+    let jpExample: String?
+    let jpExampleTranslation: String?
     let cnPinyin: String
+    let cnCharacters: String?  // Chinese simplified form if different from JP
     let cnMeaningsSimplified: [String]
     let cnMeaningsTraditional: [String]
-    let cnExample: String
-    let cnExampleTranslation: String
+    let cnExample: String?
+    let cnExampleTranslation: String?
     let explanation: String
     let mnemonicTip: String?
+    // Structured meanings from JCKV
+    let sharedMeanings: [String]?
+    let jpOnlyMeanings: [String]?
+    let cnOnlyMeanings: [String]?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -64,12 +69,16 @@ struct FalseFriendJSONV2: Codable {
         case jpExample = "jp_example"
         case jpExampleTranslation = "jp_example_translation"
         case cnPinyin = "cn_pinyin"
+        case cnCharacters = "cn_characters"
         case cnMeaningsSimplified = "cn_meanings_simplified"
         case cnMeaningsTraditional = "cn_meanings_traditional"
         case cnExample = "cn_example"
         case cnExampleTranslation = "cn_example_translation"
         case explanation
         case mnemonicTip = "mnemonic_tip"
+        case sharedMeanings = "shared_meanings"
+        case jpOnlyMeanings = "jp_only_meanings"
+        case cnOnlyMeanings = "cn_only_meanings"
     }
 
     /// Convert JSON model to database model
@@ -101,15 +110,19 @@ struct FalseFriendJSONV2: Codable {
             throw JSONImportError.invalidValue(field: "affected_system", value: affectedSystemValue)
         }
 
-        // Build examples array using the Example struct
-        let examples = [
-            Example(
-                japanese: jpExample,
-                chineseSimplified: cnExample,
-                chineseTraditional: cnExample, // v2 format doesn't distinguish, use same
-                translation: jpExampleTranslation
-            )
-        ]
+        // Build examples array - only if we have actual example content
+        var examples: [Example] = []
+        let hasJpExample = !(jpExample?.isEmpty ?? true)
+        let hasCnExample = !(cnExample?.isEmpty ?? true)
+        
+        if hasJpExample || hasCnExample {
+            examples.append(Example(
+                japanese: jpExample ?? "",
+                chineseSimplified: cnExample ?? "",
+                chineseTraditional: cnExample ?? "",
+                translation: jpExampleTranslation ?? ""
+            ))
+        }
 
         return FalseFriend(
             id: id,
@@ -117,6 +130,7 @@ struct FalseFriendJSONV2: Codable {
             jpReading: jpReading,
             jpMeanings: jpMeanings,
             cnPinyin: cnPinyin,
+            cnCharacters: cnCharacters,
             cnMeaningsSimplified: cnMeaningsSimplified,
             cnMeaningsTraditional: cnMeaningsTraditional,
             severity: severityEnum,
@@ -125,7 +139,10 @@ struct FalseFriendJSONV2: Codable {
             explanation: explanation,
             examples: examples,
             traditionalNote: traditionalNote,
-            mergedFrom: mergedFrom
+            mergedFrom: mergedFrom,
+            sharedMeanings: sharedMeanings,
+            jpOnlyMeanings: jpOnlyMeanings,
+            cnOnlyMeanings: cnOnlyMeanings
         )
     }
 }
