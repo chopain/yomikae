@@ -5,6 +5,9 @@ struct CharacterCard: View {
     let falseFriend: FalseFriend?
     var onFalseFriendTap: (() -> Void)? = nil
 
+    @State private var selectedCharacter: String?
+    @State private var showingCharacterPopup = false
+
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             // False Friend Banner (if applicable)
@@ -24,6 +27,22 @@ struct CharacterCard: View {
                 Spacer()
             }
             .padding(.vertical, 8)
+
+            // Tappable character breakdown (for multi-character compounds)
+            if character.character.count > 1 {
+                HStack {
+                    Spacer()
+                    TappableCharacterRow(
+                        compound: character.character,
+                        highlightColor: falseFriend != nil ? .red : .accentColor,
+                        onCharacterTap: { char in
+                            selectedCharacter = char
+                            showingCharacterPopup = true
+                        }
+                    )
+                    Spacer()
+                }
+            }
 
             // Japanese Reading Section
             if let japanese = character.japanese {
@@ -102,6 +121,18 @@ struct CharacterCard: View {
                     y: 2
                 )
         )
+        .sheet(isPresented: $showingCharacterPopup) {
+            if let char = selectedCharacter {
+                WordPopupView(
+                    word: char,
+                    language: .japanese,
+                    onViewDetails: nil,
+                    onDismiss: {
+                        showingCharacterPopup = false
+                    }
+                )
+            }
+        }
     }
 
     // MARK: - Helper Methods

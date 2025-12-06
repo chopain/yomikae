@@ -46,6 +46,9 @@
 		2283A77E2EE2E11A00632D48 /* ReadingSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2283A77D2EE2E11A00632D48 /* ReadingSection.swift */; };
 		2283A7802EE2E12600632D48 /* SpeakerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2283A77F2EE2E12600632D48 /* SpeakerButton.swift */; };
 		2283A7822EE2E3F700632D48 /* SpeechService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2283A7812EE2E3F700632D48 /* SpeechService.swift */; };
+		2283A7852EE4442D00632D48 /* WordPopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2283A7842EE4442D00632D48 /* WordPopupView.swift */; };
+		2283A7862EE4442D00632D48 /* TappableTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2283A7832EE4442D00632D48 /* TappableTextView.swift */; };
+		2283A7882EE4479200632D48 /* TappableCharacterRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2283A7872EE4479200632D48 /* TappableCharacterRow.swift */; };
 		A0000001000000000000001 /* YomikaeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000002000000000000001 /* YomikaeApp.swift */; };
 		A0000003000000000000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000004000000000000001 /* ContentView.swift */; };
 		A0000005000000000000001 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000006000000000000001 /* SearchView.swift */; };
@@ -120,6 +123,9 @@
 		2283A77D2EE2E11A00632D48 /* ReadingSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingSection.swift; sourceTree = "<group>"; };
 		2283A77F2EE2E12600632D48 /* SpeakerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakerButton.swift; sourceTree = "<group>"; };
 		2283A7812EE2E3F700632D48 /* SpeechService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechService.swift; sourceTree = "<group>"; };
+		2283A7832EE4442D00632D48 /* TappableTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TappableTextView.swift; sourceTree = "<group>"; };
+		2283A7842EE4442D00632D48 /* WordPopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordPopupView.swift; sourceTree = "<group>"; };
+		2283A7872EE4479200632D48 /* TappableCharacterRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TappableCharacterRow.swift; sourceTree = "<group>"; };
 		46E2F57906164195AA4A37F6 /* false_friends.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = false_friends.json; sourceTree = "<group>"; };
 		A0000002000000000000001 /* YomikaeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YomikaeApp.swift; sourceTree = "<group>"; };
 		A0000004000000000000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -387,6 +393,9 @@
 		A0000028000000000000001 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				2283A7872EE4479200632D48 /* TappableCharacterRow.swift */,
+				2283A7832EE4442D00632D48 /* TappableTextView.swift */,
+				2283A7842EE4442D00632D48 /* WordPopupView.swift */,
 				2283A77D2EE2E11A00632D48 /* ReadingSection.swift */,
 				2283A77F2EE2E12600632D48 /* SpeakerButton.swift */,
 				2283A7792EE226CA00632D48 /* PinyinTextView.swift */,
@@ -579,6 +588,9 @@
 				2241881C2EDF594000F16EC8 /* LaunchScreenView.swift in Sources */,
 				A0000049000000000000001 /* CharacterRepository.swift in Sources */,
 				A0000051000000000000001 /* DatabaseManager.swift in Sources */,
+				2283A7852EE4442D00632D48 /* WordPopupView.swift in Sources */,
+				2283A7882EE4479200632D48 /* TappableCharacterRow.swift in Sources */,
+				2283A7862EE4442D00632D48 /* TappableTextView.swift in Sources */,
 				A0000053000000000000001 /* FalseFriendRepository.swift in Sources */,
 				A0000001000000000000001 /* YomikaeApp.swift in Sources */,
 			);

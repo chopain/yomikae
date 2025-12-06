@@ -4,6 +4,9 @@ struct FalseFriendDetailView: View {
     let falseFriend: FalseFriend
 
     @ObservedObject private var settings = UserSettings.shared
+    @State private var selectedWord: String?
+    @State private var selectedWordLanguage: TappableTextLanguage = .japanese
+    @State private var showingWordPopup = false
 
     var body: some View {
         ScrollView {
@@ -40,6 +43,18 @@ struct FalseFriendDetailView: View {
         }
         .navigationTitle("False Friend")
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showingWordPopup) {
+            if let word = selectedWord {
+                WordPopupView(
+                    word: word,
+                    language: selectedWordLanguage,
+                    onViewDetails: nil,
+                    onDismiss: {
+                        showingWordPopup = false
+                    }
+                )
+            }
+        }
     }
 
     // MARK: - Character Section
@@ -53,6 +68,17 @@ struct FalseFriendDetailView: View {
                 .minimumScaleFactor(0.5)
                 .lineLimit(1)
                 .foregroundColor(falseFriend.severity.color)
+
+            // Tappable character breakdown (for multi-character compounds)
+            TappableCharacterRow(
+                compound: falseFriend.character,
+                highlightColor: falseFriend.severity.color,
+                onCharacterTap: { char in
+                    selectedWord = char
+                    selectedWordLanguage = .japanese
+                    showingWordPopup = true
+                }
+            )
 
             // Severity Banner (without tap handler)
             FalseFriendBanner(falseFriend: falseFriend, onTap: nil)
@@ -207,8 +233,14 @@ struct FalseFriendDetailView: View {
                     translation: example.translation,
                     color: .blue,
                     forLanguage: .japanese,
+                    tappableLanguage: .japanese,
                     onSpeak: {
                         SpeechService.shared.speakJapanese(example.japanese)
+                    },
+                    onWordTap: { word in
+                        selectedWord = word
+                        selectedWordLanguage = .japanese
+                        showingWordPopup = true
                     }
                 )
             }
@@ -349,16 +381,22 @@ struct FalseFriendDetailView: View {
 
             // Examples
             if let example = falseFriend.examples.first {
+                let isTraditional = settings.chineseSystem == .traditional
+                let chineseText = isTraditional ? example.chineseTraditional : example.chineseSimplified
                 exampleCard(
                     title: "Example in Chinese",
-                    text: example.chineseSimplified,
+                    text: chineseText,
                     translation: example.translation,
                     color: .red,
                     forLanguage: .chinese,
+                    tappableLanguage: .chinese,
                     onSpeak: {
-                        let isTraditional = settings.chineseSystem == .traditional
-                        let text = isTraditional ? example.chineseTraditional : example.chineseSimplified
-                        SpeechService.shared.speakChinese(text, traditional: isTraditional)
+                        SpeechService.shared.speakChinese(chineseText, traditional: isTraditional)
+                    },
+                    onWordTap: { word in
+                        selectedWord = word
+                        selectedWordLanguage = .chinese
+                        showingWordPopup = true
                     }
                 )
             }
@@ -551,7 +589,7 @@ struct FalseFriendDetailView: View {
 
     // MARK: - Helper Views
 
-    private func exampleCard(title: String, text: String, translation: String, color: Color, forLanguage: SpeakingLanguage = .none, onSpeak: (() -> Void)? = nil) -> some View {
+    private func exampleCard(title: String, text: String, translation: String, color: Color, forLanguage: SpeakingLanguage = .none, tappableLanguage: TappableTextLanguage, onSpeak: (() -> Void)? = nil, onWordTap: @escaping (String) -> Void) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text(title)
@@ -566,9 +604,13 @@ struct FalseFriendDetailView: View {
                 }
             }
 
-            Text(text)
-                .font(.body)
-                .padding(.bottom, 4)
+            TappableTextView(
+                text: text,
+                language: tappableLanguage,
+                onWordTap: onWordTap
+            )
+            .font(.body)
+            .padding(.bottom, 4)
 
             HStack(spacing: 4) {
                 Image(systemName: "quote.opening")
@@ -580,6 +622,15 @@ struct FalseFriendDetailView: View {
                     .italic()
                     .foregroundColor(.secondary)
             }
+
+            // Hint about tappable words
+            HStack(spacing: 4) {
+                Image(systemName: "hand.tap")
+                    .font(.caption2)
+                Text("Tap kanji to see details")
+                    .font(.caption2)
+            }
+            .foregroundColor(.secondary.opacity(0.7))
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
